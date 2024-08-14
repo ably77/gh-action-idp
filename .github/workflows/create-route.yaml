@@ -7,10 +7,6 @@ on:
         description: 'The name of the RouteTable'
         required: true
         type: string
-      hosts:
-        description: 'Comma-separated list of hosts'
-        required: true
-        type: string
       matcher_prefix:
         description: 'Prefix for URI matcher'
         required: true
@@ -52,7 +48,6 @@ jobs:
         id: render_manifest
         run: |
           ROUTE_NAME=${{ github.event.inputs.route_name }}
-          HOSTS=${{ github.event.inputs.hosts }}
           MATCHER_PREFIX=${{ github.event.inputs.matcher_prefix }}
           DESTINATION_NAME=${{ github.event.inputs.destination_name }}
           DESTINATION_PORT=${{ github.event.inputs.destination_port }}
@@ -69,7 +64,7 @@ jobs:
             namespace: gh-action-idp
           spec:
             hosts:
-              - '${HOSTS}'
+              - '${ROUTE_NAME}.demo.glooplatform.com'
             virtualGateways:
               - name: mgmt-north-south-gw-443
                 namespace: istio-gateways
@@ -108,3 +103,7 @@ jobs:
       - name: Delete branch after merge
         run: |
           git push origin --delete ${{ env.BRANCH_NAME }}
+      
+      - name: Echo Route URL
+        run: |
+          echo "In a few minutes the route will be accessible at: https://${{ github.event.inputs.route_name }}.demo.glooplatform.com"
