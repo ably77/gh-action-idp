@@ -93,12 +93,10 @@ jobs:
           echo "FILE_PATH=$FILE_PATH" >> $GITHUB_ENV
 
       - name: Commit and push changes
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           git add ${{ env.FILE_PATH }}
           git commit -m "Add new RouteTable for route ${{ github.event.inputs.route_name }}"
-          git push https://${{ secrets.PAT_TOKEN }}@github.com/ably77/gh-action-idp.git ${{ env.BRANCH_NAME }}
+          git push origin ${{ env.BRANCH_NAME }}
 
       - name: Merge branch into main
         run: |
