@@ -28,7 +28,7 @@ permissions:
   contents: write
 
 jobs:
-  update-manifest:
+  create-route:
     runs-on: ubuntu-latest
 
     steps:
