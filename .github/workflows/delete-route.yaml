@@ -35,7 +35,7 @@ jobs:
         id: find_and_delete_manifest
         run: |  
           ROUTE_NAME=${{ github.event.inputs.route_name }}
-          FILE_PATH="routes/${ROUTE_NAME}.yaml"
+          FILE_PATH="routes/${ROUTE_NAME}-route.yaml"
 
           if [ ! -f "$FILE_PATH" ]; then
             echo "No file found with route_name $ROUTE_NAME"

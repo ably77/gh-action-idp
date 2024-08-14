@@ -60,7 +60,7 @@ jobs:
           apiVersion: networking.gloo.solo.io/v2
           kind: RouteTable
           metadata:
-            name: ${ROUTE_NAME}
+            name: ${ROUTE_NAME}-route
             namespace: gh-action-idp
           spec:
             hosts:
