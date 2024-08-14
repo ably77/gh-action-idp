@@ -23,10 +23,6 @@ on:
         description: 'Port number of the destination service'
         required: true
         type: string
-      webhook_url:
-        description: 'Webhook URL to call on completion'
-        required: false
-        type: string
 
 permissions:
   contents: write
@@ -112,7 +108,3 @@ jobs:
       - name: Delete branch after merge
         run: |
           git push origin --delete ${{ env.BRANCH_NAME }}
-
-      - name: Send webhook notification
-        run: |
-          curl -v -L -X POST -d '{ "status": "success", "action": "create" }' ${{ github.event.inputs.webhook_url }}
