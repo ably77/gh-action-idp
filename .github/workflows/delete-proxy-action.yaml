@@ -1,0 +1,72 @@
+name: Delete Proxy Action
+
+on:
+  workflow_dispatch:
+    inputs:
+      route_id:
+        description: 'Route ID to delete'
+        required: true
+        type: string
+      webhook_url:
+        description: 'Webhook URL to call on completion'
+        required: false
+        type: string
+
+jobs:
+  delete-manifest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Git user
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+
+      - name: Create a unique branch
+        id: create_branch
+        run: |
+          BRANCH_NAME="delete-proxy-${{ github.run_id }}-${{ github.event.inputs.route_id }}"
+          git checkout -b $BRANCH_NAME
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: Find and delete manifest file
+        id: find_and_delete_manifest
+        run: |  
+          ROUTE_ID=${{ github.event.inputs.route_id }}
+          FILE_PATH=$(find environments/kapoozi/ai-gateway-routes/base/ -name "*${ROUTE_ID}.yaml")
+
+          if [ -z "$FILE_PATH" ]; then
+            echo "No file found with route_id $ROUTE_ID"
+            exit 1
+          else
+            git rm "$FILE_PATH"
+            echo "Deleted $FILE_PATH"
+          fi
+
+      - name: Commit and push changes
+        run: |
+          git commit -m "Deleted llm proxy manifest with route_id ${{ github.event.inputs.route_id }} using GitHub Action"
+          for i in {1..5}; do
+            git push origin ${{ env.BRANCH_NAME }} && break || (git fetch origin main && git rebase origin/main && sleep $((i*2)))
+          done
+
+      - name: Merge branch into main
+        run: |
+          for i in {1..5}; do
+            git fetch origin main
+            git checkout main
+            git pull origin main
+            git merge --allow-unrelated-histories --no-ff ${{ env.BRANCH_NAME }}
+            git push origin main && break || (git pull --rebase origin main && sleep $((i*2)))
+          done
+
+      - name: Delete branch after merge
+        run: |
+          git push origin --delete ${{ env.BRANCH_NAME }}
+
+      - name: Send webhook notification
+        run: |
+          curl -v -L -X POST -d '{ "status": "success", "action": "delete" }' ${{ github.event.inputs.webhook_url }}
