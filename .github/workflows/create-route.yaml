@@ -52,7 +52,7 @@ jobs:
           DESTINATION_NAME=${{ github.event.inputs.destination_name }}
           DESTINATION_PORT=${{ github.event.inputs.destination_port }}
 
-          FILE_PATH="routes/${ROUTE_NAME}.yaml"
+          FILE_PATH="routes/${ROUTE_NAME}-route.yaml"
 
           mkdir -p routes
 
