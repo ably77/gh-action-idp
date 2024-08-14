@@ -92,11 +92,11 @@ jobs:
 
           echo "FILE_PATH=$FILE_PATH" >> $GITHUB_ENV
 
-      #- name: Commit and push changes
-      #  run: |
-      #    git add ${{ env.FILE_PATH }}
-      #    git commit -m "Add new RouteTable for route ${{ github.event.inputs.route_name }}"
-      #    git push origin ${{ env.BRANCH_NAME }}
+      - name: Commit and push changes
+        run: |
+          git add ${{ env.FILE_PATH }}
+          git commit -m "Add new RouteTable for route ${{ github.event.inputs.route_name }}"
+          git push origin ${{ env.BRANCH_NAME }}
 
       #- name: Merge branch into main
       #  run: |
