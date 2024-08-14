@@ -36,10 +36,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      #- name: Set up Git user
-      #  run: |
-      #    git config --global user.name "GitHub Action"
-      #    git config --global user.email "action@github.com"
+      - name: Set up Git user
+        run: |
+          git config --global user.name "ably77"
+          git config --global user.email "alexbrucely@gmail.com"
 
       - name: Create an empty branch
         id: create_branch
