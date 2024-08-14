@@ -1,0 +1,25 @@
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: spindrift-route
+  namespace: gh-action-idp
+spec:
+  hosts:
+    - 'spindrift.demo.glooplatform.com'
+  virtualGateways:
+    - name: mgmt-north-south-gw-443
+      namespace: istio-gateways
+      cluster: mgmt
+  workloadSelectors: []
+  http:
+    - name: spindrift
+      matchers:
+        - uri:
+            prefix: /ip
+      forwardTo:
+        destinations:
+          - ref:
+              name: httpbin
+              namespace: gh-action-idp
+            port:
+              number: 8000
