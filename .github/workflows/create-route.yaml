@@ -106,4 +106,4 @@ jobs:
       
       - name: Echo Route URL
         run: |
-          echo "In a few minutes the route will be accessible at: https://${{ github.event.inputs.route_name }}.demo.glooplatform.com${MATCHER_PREFIX}"
+          echo "In a few minutes the route will be accessible at: https://${{ github.event.inputs.route_name }}.demo.glooplatform.com${{ github.event.inputs.matcher_prefix }}"
