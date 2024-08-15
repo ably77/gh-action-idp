@@ -2,7 +2,7 @@ apiVersion: networking.gloo.solo.io/v2
 kind: RouteTable
 metadata:
   name: gh-action-idp-parent
-  namespace: ops-team
+  namespace: ops-team-config
 spec:
   hosts:
     - 'gh-action-idp.demo.glooplatform.com'
