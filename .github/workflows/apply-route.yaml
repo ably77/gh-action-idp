@@ -1,4 +1,4 @@
-name: Create RouteTable Action
+name: Apply RouteTable Action
 
 on:
   workflow_dispatch:
