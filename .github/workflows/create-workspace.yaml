@@ -7,6 +7,10 @@ on:
         description: 'The name of the Workspace'
         required: true
         type: string
+      namespaces:
+        description: 'Comma-separated list of namespaces to include in the Workspace'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -36,11 +40,16 @@ jobs:
         id: render_manifests
         run: |
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
+          NAMESPACES=${{ github.event.inputs.namespaces }}
 
           WORKSPACE_FILE_PATH="mesh-admin/${WORKSPACE_NAME}-workspace.yaml"
           WORKSPACE_SETTINGS_FILE_PATH="mesh-admin/${WORKSPACE_NAME}-workspacesettings.yaml"
 
           mkdir -p mesh-admin
+
+          # Split the comma-separated namespaces into a YAML array format
+          NAMESPACE_YAML=$(echo "$NAMESPACES" | sed 's/,/\\n- name: /g')
+          NAMESPACE_YAML="- name: ${NAMESPACE_YAML}"
 
           cat <<EOF > $WORKSPACE_FILE_PATH
           apiVersion: admin.gloo.solo.io/v2
@@ -52,7 +61,7 @@ jobs:
             workloadClusters:
             - name: '*'
               namespaces:
-              - name: ${WORKSPACE_NAME}
+                ${NAMESPACE_YAML}
           EOF
 
           cat <<EOF > $WORKSPACE_SETTINGS_FILE_PATH
