@@ -40,7 +40,7 @@ spec:
    - delegate:
       routeTables:
         - label: 
-            workspace: gh-action-idp
+            app: gh-action-idp
 ---
 apiVersion: networking.gloo.solo.io/v2
 kind: RouteTable
@@ -48,7 +48,7 @@ metadata:
   name: gh-action-idp-delegate
   namespace: gh-action-idp
   label:
-    workspace: gh-action-idp
+    app: gh-action-idp
 spec:
   http:
   - name: gh-action-idp-delegate
