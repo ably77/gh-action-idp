@@ -39,7 +39,7 @@ spec:
   http:
    - delegate:
       routeTables:
-        - label: 
+        - labels: 
             app: gh-action-idp
 ---
 apiVersion: networking.gloo.solo.io/v2
