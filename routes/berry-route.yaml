@@ -47,11 +47,11 @@ kind: RouteTable
 metadata:
   name: gh-action-idp-delegate
   namespace: gh-action-idp
-  label:
-    app: gh-action-idp
 spec:
   http:
   - name: gh-action-idp-delegate
+    label:
+      app: gh-action-idp
     matchers:
     - uri:
         prefix: /get
