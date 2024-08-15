@@ -56,34 +56,34 @@ jobs:
 
           mkdir -p routes
 
+          # Start writing the RouteTable YAML file
+          echo "apiVersion: networking.gloo.solo.io/v2" > $ROUTETABLE_FILE_PATH
+          echo "kind: RouteTable" >> $ROUTETABLE_FILE_PATH
+          echo "metadata:" >> $ROUTETABLE_FILE_PATH
+          echo "  name: ${WORKSPACE_NAME}-delegate" >> $ROUTETABLE_FILE_PATH
+          echo "  namespace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
+          echo "  labels:" >> $ROUTETABLE_FILE_PATH
+          echo "    workspace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
+          echo "spec:" >> $ROUTETABLE_FILE_PATH
+          echo "  http:" >> $ROUTETABLE_FILE_PATH
+          echo "  - name: ${WORKSPACE_NAME}-delegate" >> $ROUTETABLE_FILE_PATH
+          echo "    matchers:" >> $ROUTETABLE_FILE_PATH
+
           # Split the matchers and write each one into the YAML file
           IFS=',' read -ra MATCHER_ARRAY <<< "$MATCHERS"
-          MATCHER_YAML=""
           for MATCHER in "${MATCHER_ARRAY[@]}"; do
-            MATCHER_YAML="${MATCHER_YAML}\n    - uri:\n        prefix: ${MATCHER}"
+            echo "    - uri:" >> $ROUTETABLE_FILE_PATH
+            echo "        prefix: ${MATCHER}" >> $ROUTETABLE_FILE_PATH
           done
 
-          # Write the RouteTable YAML file
-          cat <<EOF > $ROUTETABLE_FILE_PATH
-          apiVersion: networking.gloo.solo.io/v2
-          kind: RouteTable
-          metadata:
-            name: ${WORKSPACE_NAME}-delegate
-            namespace: ${WORKSPACE_NAME}
-            labels:
-              workspace: ${WORKSPACE_NAME}
-          spec:
-            http:
-            - name: ${WORKSPACE_NAME}-delegate
-              matchers:${MATCHER_YAML}
-              forwardTo:
-                destinations:
-                - ref:
-                    name: ${DESTINATION_NAME}
-                    namespace: ${WORKSPACE_NAME}
-                  port:
-                    number: ${DESTINATION_PORT}
-          EOF
+          # Continue writing the RouteTable YAML file
+          echo "    forwardTo:" >> $ROUTETABLE_FILE_PATH
+          echo "      destinations:" >> $ROUTETABLE_FILE_PATH
+          echo "      - ref:" >> $ROUTETABLE_FILE_PATH
+          echo "          name: ${DESTINATION_NAME}" >> $ROUTETABLE_FILE_PATH
+          echo "          namespace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
+          echo "        port:" >> $ROUTETABLE_FILE_PATH
+          echo "          number: ${DESTINATION_PORT}" >> $ROUTETABLE_FILE_PATH
 
           echo "ROUTETABLE_FILE_PATH=$ROUTETABLE_FILE_PATH" >> $GITHUB_ENV
 
