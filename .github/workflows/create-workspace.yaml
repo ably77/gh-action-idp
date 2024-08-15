@@ -1,10 +1,10 @@
-name: Create Workspace Action
+name: Create Workspace Manifests Action
 
 on:
   workflow_dispatch:
     inputs:
       workspace_name:
-        description: 'The name of the Workspace'
+        description: 'The name of the Workspace and WorkspaceSettings'
         required: true
         type: string
       namespaces:
@@ -47,23 +47,24 @@ jobs:
 
           mkdir -p mesh-admin
 
-          # Split the comma-separated namespaces into a YAML array format
-          NAMESPACE_YAML=$(echo "$NAMESPACES" | sed 's/,/\\n- name: /g')
-          NAMESPACE_YAML="- name: ${NAMESPACE_YAML}"
+          # Start writing the Workspace YAML file
+          echo "apiVersion: admin.gloo.solo.io/v2" > $WORKSPACE_FILE_PATH
+          echo "kind: Workspace" >> $WORKSPACE_FILE_PATH
+          echo "metadata:" >> $WORKSPACE_FILE_PATH
+          echo "  name: ${WORKSPACE_NAME}" >> $WORKSPACE_FILE_PATH
+          echo "  namespace: gloo-mesh" >> $WORKSPACE_FILE_PATH
+          echo "spec:" >> $WORKSPACE_FILE_PATH
+          echo "  workloadClusters:" >> $WORKSPACE_FILE_PATH
+          echo "  - name: '*'" >> $WORKSPACE_FILE_PATH
+          echo "    namespaces:" >> $WORKSPACE_FILE_PATH
 
-          cat <<EOF > $WORKSPACE_FILE_PATH
-          apiVersion: admin.gloo.solo.io/v2
-          kind: Workspace
-          metadata:
-            name: ${WORKSPACE_NAME}
-            namespace: gloo-mesh
-          spec:
-            workloadClusters:
-            - name: '*'
-              namespaces:
-                ${NAMESPACE_YAML}
-          EOF
+          # Split the namespaces and write each one into the YAML file
+          IFS=',' read -ra NAMESPACE_ARRAY <<< "$NAMESPACES"
+          for NAMESPACE in "${NAMESPACE_ARRAY[@]}"; do
+            echo "      - name: ${NAMESPACE}" >> $WORKSPACE_FILE_PATH
+          done
 
+          # Write the WorkspaceSettings YAML file
           cat <<EOF > $WORKSPACE_SETTINGS_FILE_PATH
           apiVersion: admin.gloo.solo.io/v2
           kind: WorkspaceSettings
@@ -97,7 +98,8 @@ jobs:
           git fetch origin main
           git checkout main
           git pull origin main
-          git merge --allow-unrelated-histories --no-ff ${{ env.BRANCH_NAME }}
+          git merge --allow-unrelated-histories --no-ff ${{ env.BRANCH_NAME }} || \
+          (git checkout --theirs -- mesh-admin/${{ github.event.inputs.workspace_name }}-workspace.yaml && git add mesh-admin/${{ github.event.inputs.workspace_name }}-workspace.yaml && git commit -m "Resolve conflict by keeping new changes" && git merge --continue)
           git push origin main || (git pull --rebase origin main && git push origin main)
 
       - name: Delete branch after merge
