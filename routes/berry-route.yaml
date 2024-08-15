@@ -1,34 +1,8 @@
-#apiVersion: networking.gloo.solo.io/v2
-#kind: RouteTable
-#metadata:
-#  name: berry-route
-#  namespace: gh-action-idp
-#spec:
-#  hosts:
-#    - 'berry.demo.glooplatform.com'
-#  virtualGateways:
-#    - name: mgmt-north-south-gw-443
-#      namespace: istio-gateways
-#      cluster: mgmt
-#  workloadSelectors: []
-#  http:
-#    - name: berry
-#      matchers:
-#        - uri:
-#            prefix: /anything/foo
-#      forwardTo:
-#        destinations:
-#          - ref:
-#              name: httpbin
-#              namespace: gh-action-idp
-#            port:
-#              number: 8000
-#---
 apiVersion: networking.gloo.solo.io/v2
 kind: RouteTable
 metadata:
   name: gh-action-idp-parent
-  namespace: gh-action-idp
+  namespace: ops-team
 spec:
   hosts:
     - 'gh-action-idp.demo.glooplatform.com'
