@@ -1,10 +1,10 @@
-name: Create Workspace Manifests Action
+name: Apply Workspace Action
 
 on:
   workflow_dispatch:
     inputs:
       workspace_name:
-        description: 'The name of the Workspace and WorkspaceSettings'
+        description: 'The name of the Workspace'
         required: true
         type: string
       namespaces:
