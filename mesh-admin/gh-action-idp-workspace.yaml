@@ -8,4 +8,3 @@ spec:
   - name: '*'
     namespaces:
       - name: gh-action-idp
-      - name: bar
