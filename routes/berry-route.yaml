@@ -64,4 +64,3 @@ spec:
           namespace: gh-action-idp
         port:
           number: 8000
-          protocol: HTTP
