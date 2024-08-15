@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+  name: gh-action-mesh-admin-aoa
+  namespace: argocd
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: mesh-admin/
+    repoURL: https://github.com/ably77/gh-action-idp/
+    targetRevision: HEAD
+    directory:
+      recurse: true
+      #exclude: '{*/catalog-info.yaml,*/manifests/*}'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m0s
+      limit: 2
