@@ -47,7 +47,7 @@ kind: RouteTable
 metadata:
   name: gh-action-idp-delegate
   namespace: gh-action-idp
-  label:
+  labels:
     workspace: gh-action-idp
 spec:
   http:
