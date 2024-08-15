@@ -11,6 +11,11 @@ on:
         description: 'Comma-separated list of URI prefixes for matchers'
         required: true
         type: string
+      destination_kind:
+        description: 'The kind of the destination resource (e.g., SERVICE)'
+        required: false
+        default: 'SERVICE'
+        type: string
       destination_name:
         description: 'Name of the destination service'
         required: true
@@ -49,6 +54,7 @@ jobs:
         run: |
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
           MATCHERS=${{ github.event.inputs.matchers }}
+          DESTINATION_KIND=${{ github.event.inputs.destination_kind || 'SERVICE' }}
           DESTINATION_NAME=${{ github.event.inputs.destination_name }}
           DESTINATION_PORT=${{ github.event.inputs.destination_port }}
 
@@ -79,7 +85,8 @@ jobs:
           # Continue writing the RouteTable YAML file
           echo "    forwardTo:" >> $ROUTETABLE_FILE_PATH
           echo "      destinations:" >> $ROUTETABLE_FILE_PATH
-          echo "      - ref:" >> $ROUTETABLE_FILE_PATH
+          echo "      - kind: ${DESTINATION_KIND}" >> $ROUTETABLE_FILE_PATH
+          echo "        ref:" >> $ROUTETABLE_FILE_PATH
           echo "          name: ${DESTINATION_NAME}" >> $ROUTETABLE_FILE_PATH
           echo "          namespace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
           echo "        port:" >> $ROUTETABLE_FILE_PATH
