@@ -28,6 +28,19 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
 
+      - name: Debug - Check Inputs
+        run: |
+          echo "Workspace Name: ${{ github.event.inputs.workspace_name }}"
+          echo "Team Name: ${{ github.event.inputs.team_name }}"
+          if [ -z "${{ github.event.inputs.workspace_name }}" ]; then
+            echo "Error: workspace_name is empty"
+            exit 1
+          fi
+          if [ -z "${{ github.event.inputs.team_name }}" ]; then
+            echo "Error: team_name is empty"
+            exit 1
+          fi
+
       - name: Create a unique branch
         id: create_branch
         run: |
@@ -115,7 +128,7 @@ jobs:
             git checkout main
             git pull origin main
             git merge --allow-unrelated-histories --no-ff ${{ env.BRANCH_NAME }}
-            git push origin main && break || (git pull --rebase origin main && sleep $((i*2)))
+            git push origin main && break || (git pull --rebase origin main and sleep $((i*2)))
           done
 
       - name: Delete branch after merge
