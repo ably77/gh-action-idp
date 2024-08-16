@@ -20,12 +20,12 @@ spec:
           - labels:
               workspace: gh-action-idp
               team: team-a
-    - name: gh-action-idp-team-b
+    - name: gh-action-idp-a
       matchers:
         - uri:
-            prefix: /team-b
+            prefix: /a
       delegate:
         routeTables:
           - labels:
               workspace: gh-action-idp
-              team: team-b
+              team: a
