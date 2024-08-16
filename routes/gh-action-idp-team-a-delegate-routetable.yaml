@@ -12,6 +12,7 @@ spec:
     - uri:
         prefix: /get
     forwardTo:
+      pathRewrite: /
       destinations:
       - kind: SERVICE
         ref:
