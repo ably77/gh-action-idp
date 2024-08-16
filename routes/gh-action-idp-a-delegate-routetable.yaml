@@ -20,9 +20,3 @@ spec:
         prefix: /get
     forwardTo:
       pathRewrite: /get
-  - name: a-ip
-    matchers:
-    - uri:
-        prefix: /ip
-    forwardTo:
-      pathRewrite: /ip
