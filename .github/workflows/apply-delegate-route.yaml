@@ -13,7 +13,7 @@ on:
         required: true
         type: string
       matchers:
-        description: 'Comma-separated list of URI prefixes for matchers without leading slash (e.g., "main,health,logs")'
+        description: 'Comma-separated list of URI prefixes for matchers without leading slash (e.g., "get,ip")'
         required: true
         type: string
       destination_kind:
@@ -76,27 +76,26 @@ jobs:
           echo "  namespace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
           echo "  labels:" >> $ROUTETABLE_FILE_PATH
           echo "    workspace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
+          echo "    team: ${TEAM_NAME}" >> $ROUTETABLE_FILE_PATH
           echo "spec:" >> $ROUTETABLE_FILE_PATH
+          echo "  defaultDestination:" >> $ROUTETABLE_FILE_PATH
+          echo "    port:" >> $ROUTETABLE_FILE_PATH
+          echo "      number: ${DESTINATION_PORT}" >> $ROUTETABLE_FILE_PATH
+          echo "    ref:" >> $ROUTETABLE_FILE_PATH
+          echo "      name: ${DESTINATION_NAME}" >> $ROUTETABLE_FILE_PATH
+          echo "      namespace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
           echo "  http:" >> $ROUTETABLE_FILE_PATH
-          echo "  - name: ${WORKSPACE_NAME}-${TEAM_NAME}-delegate" >> $ROUTETABLE_FILE_PATH
-          echo "    matchers:" >> $ROUTETABLE_FILE_PATH
 
           # Split the matchers and write each one into the YAML file
           IFS=',' read -ra MATCHER_ARRAY <<< "$MATCHERS"
           for MATCHER in "${MATCHER_ARRAY[@]}"; do
+            echo "  - name: ${TEAM_NAME}-${MATCHER}" >> $ROUTETABLE_FILE_PATH
+            echo "    matchers:" >> $ROUTETABLE_FILE_PATH
             echo "    - uri:" >> $ROUTETABLE_FILE_PATH
-            echo "        prefix: /${TEAM_NAME}/${MATCHER}" >> $ROUTETABLE_FILE_PATH
+            echo "        prefix: /${MATCHER}" >> $ROUTETABLE_FILE_PATH
+            echo "    forwardTo:" >> $ROUTETABLE_FILE_PATH
+            echo "      pathRewrite: /${MATCHER}" >> $ROUTETABLE_FILE_PATH
           done
-
-          # Continue writing the RouteTable YAML file
-          echo "    forwardTo:" >> $ROUTETABLE_FILE_PATH
-          echo "      destinations:" >> $ROUTETABLE_FILE_PATH
-          echo "      - kind: ${DESTINATION_KIND}" >> $ROUTETABLE_FILE_PATH
-          echo "        ref:" >> $ROUTETABLE_FILE_PATH
-          echo "          name: ${DESTINATION_NAME}" >> $ROUTETABLE_FILE_PATH
-          echo "          namespace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
-          echo "        port:" >> $ROUTETABLE_FILE_PATH
-          echo "          number: ${DESTINATION_PORT}" >> $ROUTETABLE_FILE_PATH
 
           echo "ROUTETABLE_FILE_PATH=$ROUTETABLE_FILE_PATH" >> $GITHUB_ENV
 
