@@ -7,6 +7,10 @@ on:
         description: 'The name of the Workspace and RouteTable'
         required: true
         type: string
+      team_name:
+        description: 'The name of the team using this RouteTable'
+        required: true
+        type: string
       matchers:
         description: 'Comma-separated list of URI prefixes for matchers'
         required: true
@@ -53,12 +57,13 @@ jobs:
         id: render_manifest
         run: |
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
+          TEAM_NAME=${{ github.event.inputs.team_name }}
           MATCHERS=${{ github.event.inputs.matchers }}
           DESTINATION_KIND=${{ github.event.inputs.destination_kind || 'SERVICE' }}
           DESTINATION_NAME=${{ github.event.inputs.destination_name }}
           DESTINATION_PORT=${{ github.event.inputs.destination_port }}
 
-          ROUTETABLE_FILE_PATH="routes/${WORKSPACE_NAME}-delegate-routetable.yaml"
+          ROUTETABLE_FILE_PATH="routes/${WORKSPACE_NAME}-${TEAM_NAME}-delegate-routetable.yaml"
 
           mkdir -p routes
 
@@ -66,20 +71,20 @@ jobs:
           echo "apiVersion: networking.gloo.solo.io/v2" > $ROUTETABLE_FILE_PATH
           echo "kind: RouteTable" >> $ROUTETABLE_FILE_PATH
           echo "metadata:" >> $ROUTETABLE_FILE_PATH
-          echo "  name: ${WORKSPACE_NAME}-delegate" >> $ROUTETABLE_FILE_PATH
+          echo "  name: ${WORKSPACE_NAME}-${WORKSPACE_NAME}-${TEAM_NAME}-delegate" >> $ROUTETABLE_FILE_PATH
           echo "  namespace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
           echo "  labels:" >> $ROUTETABLE_FILE_PATH
           echo "    workspace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
           echo "spec:" >> $ROUTETABLE_FILE_PATH
           echo "  http:" >> $ROUTETABLE_FILE_PATH
-          echo "  - name: ${WORKSPACE_NAME}-delegate" >> $ROUTETABLE_FILE_PATH
+          echo "  - name: ${WORKSPACE_NAME}-${TEAM_NAME}-delegate" >> $ROUTETABLE_FILE_PATH
           echo "    matchers:" >> $ROUTETABLE_FILE_PATH
 
           # Split the matchers and write each one into the YAML file
           IFS=',' read -ra MATCHER_ARRAY <<< "$MATCHERS"
           for MATCHER in "${MATCHER_ARRAY[@]}"; do
             echo "    - uri:" >> $ROUTETABLE_FILE_PATH
-            echo "        prefix: ${MATCHER}" >> $ROUTETABLE_FILE_PATH
+            echo "        prefix: /${TEAM_NAME}/${MATCHER}" >> $ROUTETABLE_FILE_PATH
           done
 
           # Continue writing the RouteTable YAML file
