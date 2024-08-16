@@ -1,33 +1,3 @@
-name: Deploy Sample Service
-
-on:
-  workflow_dispatch:
-    inputs:
-      workspace_name:
-        description: 'The name of the Workspace'
-        required: true
-        type: string
-      team_name:
-        description: 'The name of the team'
-        required: true
-        type: string
-
-permissions:
-  contents: write
-
-jobs:
-  deploy-service:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Git user
-        run: |
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
-
       - name: Create a unique branch
         id: create_branch
         run: |
@@ -35,13 +5,16 @@ jobs:
           git checkout -b $BRANCH_NAME
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
+      - name: Create apps directory
+        run: mkdir -p apps
+
       - name: Create Application manifest
         id: create_manifest
         run: |
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
           TEAM_NAME=${{ github.event.inputs.team_name }}
 
-          cat <<EOF > applications/${WORKSPACE_NAME}-${TEAM_NAME}-sample-service.yaml
+          cat <<EOF > apps/${WORKSPACE_NAME}-${TEAM_NAME}-sample-service.yaml
           apiVersion: argoproj.io/v1alpha1
           kind: Application
           metadata:
@@ -98,22 +71,8 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git add applications/${WORKSPACE_NAME}-${TEAM_NAME}-sample-service.yaml
+          git add apps/${WORKSPACE_NAME}-${TEAM_NAME}-sample-service.yaml
           git commit -m "Deployed sample service for workspace ${{ github.event.inputs.workspace_name }} and team ${{ github.event.inputs.team_name }} using GitHub Action"
           for i in {1..5}; do
             git push origin ${{ env.BRANCH_NAME }} && break || (git fetch origin main && git rebase origin/main && sleep $((i*2)))
           done
-
-      - name: Merge branch into main
-        run: |
-          for i in {1..5}; do
-            git fetch origin main
-            git checkout main
-            git pull origin main
-            git merge --allow-unrelated-histories --no-ff ${{ env.BRANCH_NAME }}
-            git push origin main && break || (git pull --rebase origin main && sleep $((i*2)))
-          done
-
-      - name: Delete branch after merge
-        run: |
-          git push origin --delete ${{ env.BRANCH_NAME }}
