@@ -11,6 +11,10 @@ on:
         description: 'Comma-separated list of namespaces to include in the Workspace'
         required: true
         type: string
+      team_names:
+        description: 'Comma-separated list of team names'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -41,6 +45,7 @@ jobs:
         run: |
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
           NAMESPACES=${{ github.event.inputs.namespaces }}
+          TEAM_NAMES=${{ github.event.inputs.team_names }}
 
           WORKSPACE_FILE_PATH="mesh-admin/${WORKSPACE_NAME}-workspace.yaml"
           WORKSPACE_SETTINGS_FILE_PATH="mesh-admin/${WORKSPACE_NAME}-workspacesettings.yaml"
@@ -86,26 +91,33 @@ jobs:
                 trimProxyConfig: true
           EOF
 
-          # Write the RouteTable YAML file
-          cat <<EOF > $ROUTETABLE_FILE_PATH
-          apiVersion: networking.gloo.solo.io/v2
-          kind: RouteTable
-          metadata:
-            name: ${WORKSPACE_NAME}-parent
-            namespace: ops-team-config
-          spec:
-            hosts:
-              - '${WORKSPACE_NAME}.demo.glooplatform.com'
-            virtualGateways:
-              - name: mgmt-north-south-gw-443
-                namespace: istio-gateways
-                cluster: mgmt
-            http:
-              - delegate:
-                  routeTables:
-                    - labels:
-                        workspace: ${WORKSPACE_NAME}
-          EOF
+          # Start writing the RouteTable YAML file
+          echo "apiVersion: networking.gloo.solo.io/v2" > $ROUTETABLE_FILE_PATH
+          echo "kind: RouteTable" >> $ROUTETABLE_FILE_PATH
+          echo "metadata:" >> $ROUTETABLE_FILE_PATH
+          echo "  name: ${WORKSPACE_NAME}-parent" >> $ROUTETABLE_FILE_PATH
+          echo "  namespace: ops-team-config" >> $ROUTETABLE_FILE_PATH
+          echo "spec:" >> $ROUTETABLE_FILE_PATH
+          echo "  hosts:" >> $ROUTETABLE_FILE_PATH
+          echo "    - '${WORKSPACE_NAME}.demo.glooplatform.com'" >> $ROUTETABLE_FILE_PATH
+          echo "  virtualGateways:" >> $ROUTETABLE_FILE_PATH
+          echo "    - name: mgmt-north-south-gw-443" >> $ROUTETABLE_FILE_PATH
+          echo "      namespace: istio-gateways" >> $ROUTETABLE_FILE_PATH
+          echo "      cluster: mgmt" >> $ROUTETABLE_FILE_PATH
+          echo "  http:" >> $ROUTETABLE_FILE_PATH
+
+          # Split the team names and write each route into the YAML file
+          IFS=',' read -ra TEAM_ARRAY <<< "$TEAM_NAMES"
+          for TEAM in "${TEAM_ARRAY[@]}"; do
+            echo "    - name: ${WORKSPACE_NAME}-${TEAM}" >> $ROUTETABLE_FILE_PATH
+            echo "      matchers:" >> $ROUTETABLE_FILE_PATH
+            echo "        - uri:" >> $ROUTETABLE_FILE_PATH
+            echo "            prefix: /${TEAM}" >> $ROUTETABLE_FILE_PATH
+            echo "      delegate:" >> $ROUTETABLE_FILE_PATH
+            echo "        routeTables:" >> $ROUTETABLE_FILE_PATH
+            echo "          - labels:" >> $ROUTETABLE_FILE_PATH
+            echo "              workspace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
+          done
 
           echo "WORKSPACE_FILE_PATH=$WORKSPACE_FILE_PATH" >> $GITHUB_ENV
           echo "WORKSPACE_SETTINGS_FILE_PATH=$WORKSPACE_SETTINGS_FILE_PATH" >> $GITHUB_ENV
