@@ -13,10 +13,8 @@ spec:
         prefix: /team-a/get
     - uri:
         prefix: /team-a/ip
-    redirect:
-      pathRedirect: /
     forwardTo:
-      #pathRewrite: /
+      pathRewrite: /
       destinations:
       - kind: SERVICE
         ref:
