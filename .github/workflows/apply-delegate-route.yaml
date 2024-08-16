@@ -25,13 +25,13 @@ on:
         description: 'Name of the destination service'
         required: true
         type: string
-      destination_namespace:
-        description: 'Namespace of the destination service (defaults to workspace_name if not provided)'
-        required: false
-        type: string
       destination_port:
         description: 'Port number of the destination service'
         required: true
+        type: string
+      destination_namespace:
+        description: 'Namespace of the destination service (defaults to workspace_name if not provided)'
+        required: false
         type: string
 
 permissions:
