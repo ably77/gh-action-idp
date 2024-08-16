@@ -12,7 +12,7 @@ spec:
   source:
     repoURL: 'https://github.com/ably77/gh-action-idp'
     targetRevision: HEAD
-    path: sample-service-helm-chart
+    path: fake-service-helm-chart
     helm:
       values: |
         namespace: team-b
