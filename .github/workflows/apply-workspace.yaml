@@ -41,6 +41,55 @@ jobs:
           git checkout -b $BRANCH_NAME
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
+      - name: Create or update Workspace and WorkspaceSettings manifests
+        run: |
+          WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
+          NAMESPACES=${{ github.event.inputs.namespaces }}
+
+          WORKSPACE_FILE_PATH="mesh-admin/${WORKSPACE_NAME}-workspace.yaml"
+          WORKSPACE_SETTINGS_FILE_PATH="mesh-admin/${WORKSPACE_NAME}-workspacesettings.yaml"
+
+          # Create or overwrite the Workspace YAML file
+          echo "apiVersion: admin.gloo.solo.io/v2" > $WORKSPACE_FILE_PATH
+          echo "kind: Workspace" >> $WORKSPACE_FILE_PATH
+          echo "metadata:" >> $WORKSPACE_FILE_PATH
+          echo "  name: ${WORKSPACE_NAME}" >> $WORKSPACE_FILE_PATH
+          echo "  namespace: gloo-mesh" >> $WORKSPACE_FILE_PATH
+          echo "spec:" >> $WORKSPACE_FILE_PATH
+          echo "  workloadClusters:" >> $WORKSPACE_FILE_PATH
+          echo "  - name: '*'" >> $WORKSPACE_FILE_PATH
+          echo "    namespaces:" >> $WORKSPACE_FILE_PATH
+
+          # Split the namespaces and write each one into the YAML file
+          IFS=',' read -ra NAMESPACE_ARRAY <<< "$NAMESPACES"
+          for NAMESPACE in "${NAMESPACE_ARRAY[@]}"; do
+            echo "      - name: ${NAMESPACE}" >> $WORKSPACE_FILE_PATH
+          done
+
+          # Create or overwrite the WorkspaceSettings YAML file
+          echo "apiVersion: admin.gloo.solo.io/v2" > $WORKSPACE_SETTINGS_FILE_PATH
+          echo "kind: WorkspaceSettings" >> $WORKSPACE_SETTINGS_FILE_PATH
+          echo "metadata:" >> $WORKSPACE_SETTINGS_FILE_PATH
+          echo "  name: ${WORKSPACE_NAME}" >> $WORKSPACE_SETTINGS_FILE_PATH
+          echo "  namespace: ${WORKSPACE_NAME}" >> $WORKSPACE_SETTINGS_FILE_PATH
+          echo "spec:" >> $WORKSPACE_SETTINGS_FILE_PATH
+          echo "  exportTo:" >> $WORKSPACE_SETTINGS_FILE_PATH
+          echo "  - workspaces:" >> $WORKSPACE_SETTINGS_FILE_PATH
+          echo "    - name: ops-team" >> $WORKSPACE_SETTINGS_FILE_PATH
+          echo "  importFrom:" >> $WORKSPACE_SETTINGS_FILE_PATH
+          echo "  - workspaces:" >> $WORKSPACE_SETTINGS_FILE_PATH
+          echo "    - name: ops-team" >> $WORKSPACE_SETTINGS_FILE_PATH
+          echo "  options:" >> $WORKSPACE_SETTINGS_FILE_PATH
+          echo "    serviceIsolation:" >> $WORKSPACE_SETTINGS_FILE_PATH
+          echo "      enabled: true" >> $WORKSPACE_SETTINGS_FILE_PATH
+          echo "      trimProxyConfig: true" >> $WORKSPACE_SETTINGS_FILE_PATH
+
+          # Print the contents of the files for debugging
+          echo "Contents of $WORKSPACE_FILE_PATH:"
+          cat $WORKSPACE_FILE_PATH
+          echo "Contents of $WORKSPACE_SETTINGS_FILE_PATH:"
+          cat $WORKSPACE_SETTINGS_FILE_PATH
+
       - name: Create or update RouteTable manifests
         run: |
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
@@ -84,7 +133,7 @@ jobs:
       - name: Commit and push changes
         run: |
           git add .
-          git commit -m "Created/Updated RouteTable for workspace ${{ github.event.inputs.workspace_name }} with teams ${{ github.event.inputs.team_names }}" || echo "No changes to commit"
+          git commit -m "Created/Updated Workspace, WorkspaceSettings, and RouteTable for workspace ${{ github.event.inputs.workspace_name }} with teams ${{ github.event.inputs.team_names }}" || echo "No changes to commit"
           git push origin $BRANCH_NAME
 
       - name: Merge branch into main
