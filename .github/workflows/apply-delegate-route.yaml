@@ -65,7 +65,13 @@ jobs:
           DESTINATION_KIND=${{ github.event.inputs.destination_kind || 'SERVICE' }}
           DESTINATION_NAME=${{ github.event.inputs.destination_name }}
           DESTINATION_PORT=${{ github.event.inputs.destination_port }}
-          DESTINATION_NAMESPACE=${{ github.event.inputs.destination_namespace || $WORKSPACE_NAME }}
+
+          # Assign DESTINATION_NAMESPACE, defaulting to WORKSPACE_NAME if not provided
+          if [ -z "${{ github.event.inputs.destination_namespace }}" ]; then
+            DESTINATION_NAMESPACE=$WORKSPACE_NAME
+          else
+            DESTINATION_NAMESPACE=${{ github.event.inputs.destination_namespace }}
+          fi
 
           ROUTETABLE_FILE_PATH="routes/${WORKSPACE_NAME}-${TEAM_NAME}-delegate-routetable.yaml"
 
@@ -101,7 +107,7 @@ jobs:
           # Print the contents of the file for debugging
           echo "Contents of $ROUTETABLE_FILE_PATH:"
           cat $ROUTETABLE_FILE_PATH
-
+          
       - name: Commit and push changes
         run: |
           git add .
