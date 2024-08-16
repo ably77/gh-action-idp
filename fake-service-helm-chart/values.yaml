@@ -1,0 +1,27 @@
+namespace: ns-1
+
+app:
+  name: tier-1-app-a
+  tier: "1"
+  replicas: 1
+  image:
+    repository: nicholasjackson/fake-service
+    tag: v0.26.2
+
+service:
+  port: 8080
+  targetPort: 8080
+
+env:
+  LISTEN_ADDR: "0.0.0.0:8080"
+  NAME: "{{ .Values.app.name }}"
+  SERVER_TYPE: "http"
+  MESSAGE: "Hello From {{ .Values.app.name }} !"
+  UPSTREAM_URIS: ""
+  UPSTREAM_WORKERS: "1"
+  TIMING_50_PERCENTILE: "0ms"
+  TIMING_90_PERCENTILE: "0ms"
+  TIMING_99_PERCENTILE: "0ms"
+  HTTP_CLIENT_REQUEST_TIMEOUT: "1s"
+  HTTP_SERVER_KEEP_ALIVES: "true"
+  HTTP_CLIENT_KEEP_ALIVES: "true"

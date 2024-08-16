@@ -1,0 +1,5 @@
+apiVersion: v2
+name: fake-service-chart
+description: A Helm chart to deploy a simple service using the https://github.com/nicholasjackson/fake-service project on a kubernetes cluster
+version: 0.1.0
+appVersion: "1.0"
