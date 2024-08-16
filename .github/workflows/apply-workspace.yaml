@@ -49,6 +49,7 @@ jobs:
           ROUTETABLE_FILE_PATH="routes/${WORKSPACE_NAME}-parent-routetable.yaml"
 
           if [ -f "$ROUTETABLE_FILE_PATH" ]; then
+            echo "Updating existing RouteTable at $ROUTETABLE_FILE_PATH"
             # Update the existing RouteTable
             IFS=',' read -ra TEAM_ARRAY <<< "$TEAM_NAMES"
             for TEAM in "${TEAM_ARRAY[@]}"; do
@@ -57,7 +58,8 @@ jobs:
               sed -i'' -e "s/name: .*/name: ${WORKSPACE_NAME}-${TEAM}/g" $ROUTETABLE_FILE_PATH
             done
           else
-            # Create a new RouteTable file
+            echo "Creating new RouteTable at $ROUTETABLE_FILE_PATH"
+            mkdir -p routes
             echo "apiVersion: networking.gloo.solo.io/v2" > $ROUTETABLE_FILE_PATH
             echo "kind: RouteTable" >> $ROUTETABLE_FILE_PATH
             echo "metadata:" >> $ROUTETABLE_FILE_PATH
@@ -85,6 +87,10 @@ jobs:
               echo "              team: ${TEAM}" >> $ROUTETABLE_FILE_PATH
             done
           fi
+
+          # Print the contents of the file for debugging
+          echo "Contents of $ROUTETABLE_FILE_PATH:"
+          cat $ROUTETABLE_FILE_PATH
 
       - name: Commit and push changes
         run: |
