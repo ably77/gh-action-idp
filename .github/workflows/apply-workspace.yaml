@@ -30,21 +30,47 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
 
-      - name: Create namespace manifest file in GitHub
+      - name: Create namespace manifest files in GitHub
         run: |
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
-
-          NAMESPACE_FILE_PATH="mesh-admin/${WORKSPACE_NAME}-namespace.yaml"
-
-          # Create or overwrite the Namespace manifest file
-          echo "apiVersion: v1" > $NAMESPACE_FILE_PATH
-          echo "kind: Namespace" >> $NAMESPACE_FILE_PATH
-          echo "metadata:" >> $NAMESPACE_FILE_PATH
-          echo "  name: ${WORKSPACE_NAME}" >> $NAMESPACE_FILE_PATH
-
-          # Print the contents of the file for debugging
-          echo "Contents of $NAMESPACE_FILE_PATH:"
-          cat $NAMESPACE_FILE_PATH
+          NAMESPACES=${{ github.event.inputs.namespaces }}
+      
+          # Create or overwrite the Namespace manifest for the Workspace
+          WORKSPACE_NAMESPACE_FILE_PATH="mesh-admin/${WORKSPACE_NAME}-namespace.yaml"
+          echo "apiVersion: v1" > $WORKSPACE_NAMESPACE_FILE_PATH
+          echo "kind: Namespace" >> $WORKSPACE_NAMESPACE_FILE_PATH
+          echo "metadata:" >> $WORKSPACE_NAMESPACE_FILE_PATH
+          echo "  name: ${WORKSPACE_NAME}" >> $WORKSPACE_NAMESPACE_FILE_PATH
+      
+          # Split the namespaces and create a manifest file for each if it doesn't exist
+          IFS=',' read -ra NAMESPACE_ARRAY <<< "$NAMESPACES"
+          for NAMESPACE in "${NAMESPACE_ARRAY[@]}"; do
+            NAMESPACE_FILE_PATH="mesh-admin/${NAMESPACE}-namespace.yaml"
+      
+            # Check if the namespace manifest file already exists
+            if [ ! -f "$NAMESPACE_FILE_PATH" ]; then
+              echo "Creating Namespace manifest for ${NAMESPACE}"
+      
+              echo "apiVersion: v1" > $NAMESPACE_FILE_PATH
+              echo "kind: Namespace" >> $NAMESPACE_FILE_PATH
+              echo "metadata:" >> $NAMESPACE_FILE_PATH
+              echo "  name: ${NAMESPACE}" >> $NAMESPACE_FILE_PATH
+            else
+              echo "Namespace manifest for ${NAMESPACE} already exists, skipping creation."
+            fi
+          done
+      
+          # Print the contents of the created files for debugging
+          echo "Contents of $WORKSPACE_NAMESPACE_FILE_PATH:"
+          cat $WORKSPACE_NAMESPACE_FILE_PATH
+      
+          for NAMESPACE in "${NAMESPACE_ARRAY[@]}"; do
+            NAMESPACE_FILE_PATH="mesh-admin/${NAMESPACE}-namespace.yaml"
+            if [ -f "$NAMESPACE_FILE_PATH" ]; then
+              echo "Contents of $NAMESPACE_FILE_PATH:"
+              cat $NAMESPACE_FILE_PATH
+            fi
+          done
 
       - name: Create a branch for update
         id: create_branch
