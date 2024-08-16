@@ -135,11 +135,8 @@ jobs:
           git fetch origin main
           git checkout main
           git pull origin main
-          git merge --allow-unrelated-histories --no-ff ${{ env.BRANCH_NAME }} || {
-            git merge --strategy-option theirs --no-commit --no-ff ${{ env.BRANCH_NAME }} &&
-            git add routes/gh-action-idp-parent-routetable.yaml &&
-            git commit -m "Resolved merge conflict by keeping new changes"
-          }
+          git merge --allow-unrelated-histories --no-ff ${{ env.BRANCH_NAME }} || \
+          (git checkout --theirs -- mesh-admin/${{ github.event.inputs.workspace_name }}-workspace.yaml && git add mesh-admin/${{ github.event.inputs.workspace_name }}-workspace.yaml && git commit -m "Resolve conflict by keeping new changes" && git push origin main)
           git push origin main || (git pull --rebase origin main && git push origin main)
 
       - name: Delete branch after merge
