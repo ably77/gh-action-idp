@@ -44,7 +44,7 @@ jobs:
           echo "apiVersion: argoproj.io/v1alpha1" > $APP_FILE_PATH
           echo "kind: Application" >> $APP_FILE_PATH
           echo "metadata:" >> $APP_FILE_PATH
-          echo "  name: fake-service" >> $APP_FILE_PATH
+          echo "  name: sample-service-${TEAM_NAME}" >> $APP_FILE_PATH
           echo "  namespace: argocd" >> $APP_FILE_PATH
           echo "  finalizers:" >> $APP_FILE_PATH
           echo "    - resources-finalizer.argocd.argoproj.io" >> $APP_FILE_PATH
@@ -55,7 +55,7 @@ jobs:
           echo "  source:" >> $APP_FILE_PATH
           echo "    repoURL: 'https://github.com/ably77/gh-action-idp'" >> $APP_FILE_PATH
           echo "    targetRevision: HEAD" >> $APP_FILE_PATH
-          echo "    path: fake-service-helm-chart" >> $APP_FILE_PATH
+          echo "    path: sample-service-helm-chart" >> $APP_FILE_PATH
           echo "    helm:" >> $APP_FILE_PATH
           echo "      values: |" >> $APP_FILE_PATH
           echo "        namespace: ${TEAM_NAME}" >> $APP_FILE_PATH
@@ -64,11 +64,11 @@ jobs:
           echo "          revision: \"1-22\"" >> $APP_FILE_PATH
           echo "" >> $APP_FILE_PATH
           echo "        app:" >> $APP_FILE_PATH
-          echo "          name: fake-service-${TEAM_NAME}" >> $APP_FILE_PATH
+          echo "          name: sample-service-${TEAM_NAME}" >> $APP_FILE_PATH
           echo "          tier: \"1\"" >> $APP_FILE_PATH
           echo "          replicas: 1" >> $APP_FILE_PATH
           echo "          image:" >> $APP_FILE_PATH
-          echo "            repository: nicholasjackson/fake-service" >> $APP_FILE_PATH
+          echo "            repository: nicholasjackson/sample-service" >> $APP_FILE_PATH
           echo "            tag: v0.26.2" >> $APP_FILE_PATH
           echo "" >> $APP_FILE_PATH
           echo "        service:" >> $APP_FILE_PATH
@@ -77,9 +77,9 @@ jobs:
           echo "" >> $APP_FILE_PATH
           echo "        env:" >> $APP_FILE_PATH
           echo "          LISTEN_ADDR: \"0.0.0.0:8080\"" >> $APP_FILE_PATH
-          echo "          NAME: \"fake-service-${TEAM_NAME}\"" >> $APP_FILE_PATH
+          echo "          NAME: \"sample-service-${TEAM_NAME}\"" >> $APP_FILE_PATH
           echo "          SERVER_TYPE: \"http\"" >> $APP_FILE_PATH
-          echo "          MESSAGE: \"Hello From fake-service-${TEAM_NAME} !\"" >> $APP_FILE_PATH
+          echo "          MESSAGE: \"Hello From sample-service-${TEAM_NAME} !\"" >> $APP_FILE_PATH
           echo "          UPSTREAM_URIS: \"\"" >> $APP_FILE_PATH
           echo "          UPSTREAM_WORKERS: \"1\"" >> $APP_FILE_PATH
           echo "          TIMING_50_PERCENTILE: \"0ms\"" >> $APP_FILE_PATH
