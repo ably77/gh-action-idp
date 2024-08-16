@@ -4,15 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       workspace_name:
-        description: 'The name of the Workspace and RouteTable'
+        description: 'The name of the Workspace'
         required: true
+        default: 'gh-action-idp'
         type: string
       team_name:
         description: 'The name of the team using this RouteTable'
         required: true
         type: string
       matchers:
-        description: 'Comma-separated list of URI prefixes for matchers'
+        description: 'Comma-separated list of URI prefixes for matchers without leading slash (e.g., "main,health,logs")'
         required: true
         type: string
       destination_kind:
