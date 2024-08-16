@@ -11,6 +11,7 @@ on:
       namespaces:
         description: 'Comma-separated list of namespaces to include in the Workspace'
         required: true
+        default: 'gh-action-idp'
         type: string
       team_names:
         description: 'Comma-separated list of team names'
