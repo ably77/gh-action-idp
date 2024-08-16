@@ -30,6 +30,9 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
 
+      - name: Debug workspace name
+        run: echo "WORKSPACE_NAME is set to: ${{ github.event.inputs.workspace_name }}"
+
       - name: Create namespace manifest files in GitHub
         run: |
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
@@ -123,9 +126,13 @@ jobs:
 
       - name: Commit and push Workspace and WorkspaceSettings manifests
         run: |
-          git add mesh-admin/${WORKSPACE_NAME}-workspace.yaml mesh-admin/${WORKSPACE_NAME}-workspacesettings.yaml
-          git commit -m "Created/Updated Workspace and WorkspaceSettings for workspace ${{ github.event.inputs.workspace_name }}"
-          git push origin $BRANCH_NAME
+          if [[ -f "mesh-admin/${WORKSPACE_NAME}-workspace.yaml" && -f "mesh-admin/${WORKSPACE_NAME}-workspacesettings.yaml" ]]; then
+            git add mesh-admin/${WORKSPACE_NAME}-workspace.yaml mesh-admin/${WORKSPACE_NAME}-workspacesettings.yaml
+            git commit -m "Created/Updated Workspace and WorkspaceSettings for workspace ${{ github.event.inputs.workspace_name }}"
+            git push origin $BRANCH_NAME
+          else
+            echo "Workspace and WorkspaceSettings files do not exist."
+          fi
 
       - name: Create or update RouteTable manifests
         run: |
