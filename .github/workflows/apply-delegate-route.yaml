@@ -25,6 +25,10 @@ on:
         description: 'Name of the destination service'
         required: true
         type: string
+      destination_namespace:
+        description: 'Namespace of the destination service (defaults to workspace_name if not provided)'
+        required: false
+        type: string
       destination_port:
         description: 'Port number of the destination service'
         required: true
@@ -61,6 +65,7 @@ jobs:
           DESTINATION_KIND=${{ github.event.inputs.destination_kind || 'SERVICE' }}
           DESTINATION_NAME=${{ github.event.inputs.destination_name }}
           DESTINATION_PORT=${{ github.event.inputs.destination_port }}
+          DESTINATION_NAMESPACE=${{ github.event.inputs.destination_namespace || $WORKSPACE_NAME }}
 
           ROUTETABLE_FILE_PATH="routes/${WORKSPACE_NAME}-${TEAM_NAME}-delegate-routetable.yaml"
 
@@ -79,7 +84,7 @@ jobs:
           echo "      number: ${DESTINATION_PORT}" >> $ROUTETABLE_FILE_PATH
           echo "    ref:" >> $ROUTETABLE_FILE_PATH
           echo "      name: ${DESTINATION_NAME}" >> $ROUTETABLE_FILE_PATH
-          echo "      namespace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
+          echo "      namespace: ${DESTINATION_NAMESPACE}" >> $ROUTETABLE_FILE_PATH
           echo "  http:" >> $ROUTETABLE_FILE_PATH
 
           # Split the matchers and write each one into the YAML file
