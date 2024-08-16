@@ -6,17 +6,14 @@ metadata:
   labels:
     workspace: gh-action-idp
 spec:
+  defaultDestination:
+    port:
+      number: 8000
+    ref:
+      name: httpbin
+      namespace: gh-action-idp
   http:
-  - name: gh-action-idp-team-a-delegate
+  - name: team-a-matcher
     matchers:
     - uri:
         prefix: /get
-    forwardTo:
-      pathRewrite: /get
-      destinations:
-      - kind: SERVICE
-        ref:
-          name: httpbin
-          namespace: gh-action-idp
-        port:
-          number: 8000
