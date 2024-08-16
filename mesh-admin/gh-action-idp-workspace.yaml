@@ -8,5 +8,5 @@ spec:
   - name: '*'
     namespaces:
       - name: gh-action-idp
-      - name: team-a
-      - name: team-b
+      - name: a
+      - name: b
