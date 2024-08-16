@@ -28,19 +28,6 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
 
-      - name: Debug - Check Inputs
-        run: |
-          echo "Workspace Name: ${{ github.event.inputs.workspace_name }}"
-          echo "Team Name: ${{ github.event.inputs.team_name }}"
-          if [ -z "${{ github.event.inputs.workspace_name }}" ]; then
-            echo "Error: workspace_name is empty"
-            exit 1
-          fi
-          if [ -z "${{ github.event.inputs.team_name }}" ]; then
-            echo "Error: team_name is empty"
-            exit 1
-          fi
-
       - name: Create a unique branch
         id: create_branch
         run: |
@@ -48,21 +35,17 @@ jobs:
           git checkout -b $BRANCH_NAME
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
-      - name: Create /apps directory if it doesn't exist
-        run: |
-          mkdir -p apps
-
       - name: Create Application manifest
         id: create_manifest
         run: |
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
           TEAM_NAME=${{ github.event.inputs.team_name }}
 
-          cat <<EOF > apps/${WORKSPACE_NAME}-${TEAM_NAME}-sample-service.yaml
+          cat <<EOF > applications/${WORKSPACE_NAME}-${TEAM_NAME}-sample-service.yaml
           apiVersion: argoproj.io/v1alpha1
           kind: Application
           metadata:
-            name: ${WORKSPACE_NAME}-${TEAM_NAME}-fake-service
+            name: fake-service$-{WORKSPACE_NAME}-${TEAM_NAME}
             namespace: argocd
             finalizers:
               - resources-finalizer.argocd.argoproj.io
@@ -115,7 +98,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git add apps/${WORKSPACE_NAME}-${TEAM_NAME}-sample-service.yaml
+          git add applications/${WORKSPACE_NAME}-${TEAM_NAME}-sample-service.yaml
           git commit -m "Deployed sample service for workspace ${{ github.event.inputs.workspace_name }} and team ${{ github.event.inputs.team_name }} using GitHub Action"
           for i in {1..5}; do
             git push origin ${{ env.BRANCH_NAME }} && break || (git fetch origin main && git rebase origin/main && sleep $((i*2)))
@@ -128,7 +111,7 @@ jobs:
             git checkout main
             git pull origin main
             git merge --allow-unrelated-histories --no-ff ${{ env.BRANCH_NAME }}
-            git push origin main && break || (git pull --rebase origin main and sleep $((i*2)))
+            git push origin main && break || (git pull --rebase origin main && sleep $((i*2)))
           done
 
       - name: Delete branch after merge
