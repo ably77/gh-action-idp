@@ -65,7 +65,7 @@ jobs:
           ROUTETABLE_FILE_PATH="routes/${WORKSPACE_NAME}-${TEAM_NAME}-delegate-routetable.yaml"
 
           if [ -f "$ROUTETABLE_FILE_PATH" ]; then
-            # Update the existing RouteTable
+            echo "Updating existing RouteTable at $ROUTETABLE_FILE_PATH"
             sed -i'' -e "s|name: .*|name: ${WORKSPACE_NAME}-${TEAM_NAME}-delegate|g" $ROUTETABLE_FILE_PATH
             sed -i'' -e "s|workspace: .*|workspace: ${WORKSPACE_NAME}|g" $ROUTETABLE_FILE_PATH
             sed -i'' -e "s|team: .*|team: ${TEAM_NAME}|g" $ROUTETABLE_FILE_PATH
@@ -73,14 +73,13 @@ jobs:
             sed -i'' -e "s|name: .*|name: ${DESTINATION_NAME}|g" $ROUTETABLE_FILE_PATH
             sed -i'' -e "s|namespace: .*|namespace: ${WORKSPACE_NAME}|g" $ROUTETABLE_FILE_PATH
 
-            # Update matchers and pathRewrite
             IFS=',' read -ra MATCHER_ARRAY <<< "$MATCHERS"
             for MATCHER in "${MATCHER_ARRAY[@]}"; do
               sed -i'' -e "s|prefix: /.*|prefix: /${MATCHER}|g" $ROUTETABLE_FILE_PATH
               sed -i'' -e "s|pathRewrite: .*|pathRewrite: /${MATCHER}|g" $ROUTETABLE_FILE_PATH
             done
           else
-            # Create a new RouteTable file
+            echo "Creating new RouteTable at $ROUTETABLE_FILE_PATH"
             mkdir -p routes
             echo "apiVersion: networking.gloo.solo.io/v2" > $ROUTETABLE_FILE_PATH
             echo "kind: RouteTable" >> $ROUTETABLE_FILE_PATH
@@ -110,9 +109,12 @@ jobs:
             done
           fi
 
+          cat $ROUTETABLE_FILE_PATH  # Print the file for debugging
+
       - name: Commit and push changes
         run: |
           git add -u
+          git status  # Check if files are staged
           git commit -m "Created/Updated Delegate RouteTable for workspace ${{ github.event.inputs.workspace_name }} and team ${{ github.event.inputs.team_name }}" || echo "No changes to commit"
           git push origin $BRANCH_NAME
 
