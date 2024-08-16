@@ -68,7 +68,7 @@ jobs:
           echo "          tier: \"1\"" >> $APP_FILE_PATH
           echo "          replicas: 1" >> $APP_FILE_PATH
           echo "          image:" >> $APP_FILE_PATH
-          echo "            repository: nicholasjackson/sample-service" >> $APP_FILE_PATH
+          echo "            repository: nicholasjackson/fake-service" >> $APP_FILE_PATH
           echo "            tag: v0.26.2" >> $APP_FILE_PATH
           echo "" >> $APP_FILE_PATH
           echo "        service:" >> $APP_FILE_PATH
