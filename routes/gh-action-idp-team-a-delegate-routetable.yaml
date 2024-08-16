@@ -10,9 +10,8 @@ spec:
   - name: gh-action-idp-team-a-delegate
     matchers:
     - uri:
-        prefix: /team-a/get
+        prefix: /get
     forwardTo:
-      pathRewrite: /
       destinations:
       - kind: SERVICE
         ref:
