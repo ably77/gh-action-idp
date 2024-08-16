@@ -12,7 +12,7 @@ spec:
       number: 8080
     ref:
       name: sample-service-team-a
-      namespace: team-a
+      namespace: gh-action-idp
   http:
   - name: team-a-get
     matchers:
