@@ -9,7 +9,7 @@ on:
         default: 'gh-action-idp'
         type: string
       namespaces:
-        description: 'Comma-separated list of namespaces to include in the Workspace. Namespaces will be mapped 1:1 to teams. These will be turned into nested prefix matchers such as /team-a and /team-b
+        description: 'Comma-separated list of namespaces to include in the Workspace. Namespaces will be mapped 1:1 to teams. These will be turned into nested prefix matchers such as /team-a and /team-b'
         required: true
         default: 'team-a,team-b'
         type: string
