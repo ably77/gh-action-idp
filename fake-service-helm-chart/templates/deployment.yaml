@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Values.app.name }}
-    tier: {{ .Values.app.tier }}
+    tier: "{{ .Values.app.tier }}"
 spec:
   replicas: {{ .Values.app.replicas }}
   strategy:
