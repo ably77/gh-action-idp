@@ -9,14 +9,14 @@ metadata:
 spec:
   defaultDestination:
     port:
-      number: 8000
+      number: 8080
     ref:
-      name: httpbin
-      namespace: gh-action-idp
+      name: sample-service-team-a
+      namespace: team-a
   http:
-  - name: team-a-get
+  - name: team-a-root
     matchers:
     - uri:
-        prefix: /get
+        prefix: /
     forwardTo:
-      pathRewrite: /get
+      pathRewrite: /
