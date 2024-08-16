@@ -17,4 +17,5 @@ spec:
     matchers:
     - uri:
         prefix: /get
-    forwardTo: {}
+    forwardTo:
+      pathRewrite: /get
