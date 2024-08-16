@@ -1,0 +1,28 @@
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: gh-action-idp-a-delegate
+  namespace: gh-action-idp
+  labels:
+    workspace: gh-action-idp
+    team: a
+spec:
+  defaultDestination:
+    port:
+      number: 8000
+    ref:
+      name: httpbin
+      namespace: gh-action-idp
+  http:
+  - name: a-get
+    matchers:
+    - uri:
+        prefix: /get
+    forwardTo:
+      pathRewrite: /get
+  - name: a-ip
+    matchers:
+    - uri:
+        prefix: /ip
+    forwardTo:
+      pathRewrite: /ip
