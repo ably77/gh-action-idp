@@ -15,13 +15,13 @@ spec:
     path: fake-service-helm-chart
     helm:
       values: |
-        namespace: team-a
+        namespace: team-b
 
         istio:
           revision: "1-22"
 
         app:
-          name: team-a-app-a
+          name: app-b
           tier: "1"
           replicas: 1
           image:
@@ -34,9 +34,9 @@ spec:
 
         env:
           LISTEN_ADDR: "0.0.0.0:8080"
-          NAME: "team-a-app-a"
+          NAME: "app-b"
           SERVER_TYPE: "http"
-          MESSAGE: "Hello From team-a-app-a !"
+          MESSAGE: "Hello From app-b !"
           UPSTREAM_URIS: ""
           UPSTREAM_WORKERS: "1"
           TIMING_50_PERCENTILE: "0ms"
