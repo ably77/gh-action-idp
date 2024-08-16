@@ -12,17 +12,11 @@ spec:
       number: 8080
     ref:
       name: sample-service-team-a
-      namespace: gh-action-idp
+      namespace: team-a
   http:
-  - name: team-a-get
+  - name: team-a-root
     matchers:
     - uri:
-        prefix: /get
+        prefix: /
     forwardTo:
-      pathRewrite: /get
-  - name: team-a-ip
-    matchers:
-    - uri:
-        prefix: /ip
-    forwardTo:
-      pathRewrite: /ip
+      pathRewrite: /
