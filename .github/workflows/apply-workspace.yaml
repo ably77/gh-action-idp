@@ -9,13 +9,9 @@ on:
         default: 'gh-action-idp'
         type: string
       namespaces:
-        description: 'Comma-separated list of namespaces to include in the Workspace'
+        description: 'Comma-separated list of namespaces to include in the Workspace. Namespaces will be mapped 1:1 to teams.'
         required: true
-        default: 'gh-action-idp'
-        type: string
-      team_names:
-        description: 'Comma-separated list of team names. These will be turned into nested prefix matchers such as /team-a and /team-b'
-        required: true
+        default: 'team-a,team-b'
         type: string
 
 permissions:
@@ -112,7 +108,7 @@ jobs:
       - name: Create or update RouteTable manifests
         run: |
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
-          TEAM_NAMES=${{ github.event.inputs.team_names }}
+          NAMESPACES=${{ github.event.inputs.namespaces }}
 
           ROUTETABLE_FILE_PATH="routes/${WORKSPACE_NAME}-parent-routetable.yaml"
 
@@ -131,18 +127,18 @@ jobs:
           echo "      cluster: mgmt" >> $ROUTETABLE_FILE_PATH
           echo "  http:" >> $ROUTETABLE_FILE_PATH
 
-          # Split the team names and write each route into the YAML file
-          IFS=',' read -ra TEAM_ARRAY <<< "$TEAM_NAMES"
-          for TEAM in "${TEAM_ARRAY[@]}"; do
-            echo "    - name: ${WORKSPACE_NAME}-${TEAM}" >> $ROUTETABLE_FILE_PATH
+          # Split the namespaces and write each route into the YAML file
+          IFS=',' read -ra NAMESPACE_ARRAY <<< "$NAMESPACES"
+          for NAMESPACE in "${NAMESPACE_ARRAY[@]}"; do
+            echo "    - name: ${WORKSPACE_NAME}-${NAMESPACE}" >> $ROUTETABLE_FILE_PATH
             echo "      matchers:" >> $ROUTETABLE_FILE_PATH
             echo "        - uri:" >> $ROUTETABLE_FILE_PATH
-            echo "            prefix: /${TEAM}" >> $ROUTETABLE_FILE_PATH
+            echo "            prefix: /${NAMESPACE}" >> $ROUTETABLE_FILE_PATH
             echo "      delegate:" >> $ROUTETABLE_FILE_PATH
             echo "        routeTables:" >> $ROUTETABLE_FILE_PATH
             echo "          - labels:" >> $ROUTETABLE_FILE_PATH
             echo "              workspace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
-            echo "              team: ${TEAM}" >> $ROUTETABLE_FILE_PATH
+            echo "              team: ${NAMESPACE}" >> $ROUTETABLE_FILE_PATH
           done
 
           # Print the contents of the file for debugging
@@ -152,7 +148,7 @@ jobs:
       - name: Commit and push changes
         run: |
           git add .
-          git commit -m "Created/Updated Namespace, Workspace, WorkspaceSettings, and RouteTable for workspace ${{ github.event.inputs.workspace_name }} with teams ${{ github.event.inputs.team_names }}" || echo "No changes to commit"
+          git commit -m "Created/Updated Namespace, Workspace, WorkspaceSettings, and RouteTable for workspace ${{ github.event.inputs.workspace_name }} with namespaces ${{ github.event.inputs.namespaces }}" || echo "No changes to commit"
           git push origin $BRANCH_NAME
 
       - name: Merge branch into main
