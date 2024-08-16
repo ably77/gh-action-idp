@@ -20,6 +20,7 @@ spec:
     automated:
       prune: true
       selfHeal: true
+      allowEmpty: true
     retry:
       backoff:
         duration: 5s
