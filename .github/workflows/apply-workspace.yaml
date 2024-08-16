@@ -9,9 +9,9 @@ on:
         default: 'gh-action-idp'
         type: string
       namespaces:
-        description: 'Comma-separated list of namespaces to include in the Workspace. Namespaces will be mapped 1:1 to teams. These will be turned into nested prefix matchers such as /team-a and /team-b'
+        description: 'Comma-separated list of namespaces to include in the Workspace and create corresponding RouteTable matchers'
         required: true
-        default: 'team-a,team-b'
+        default: 'gh-action-idp'
         type: string
 
 permissions:
@@ -30,19 +30,13 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
 
-      - name: Debug workspace name
-        run: echo "WORKSPACE_NAME is set to: ${{ github.event.inputs.workspace_name }}"
-
       - name: Create namespace manifest files in GitHub
         run: |
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
           NAMESPACES=${{ github.event.inputs.namespaces }}
 
-          # Add WORKSPACE_NAME to the list of namespaces
-          ALL_NAMESPACES="${WORKSPACE_NAME},${NAMESPACES}"
-
           # Split the namespaces and create manifest files for each one
-          IFS=',' read -ra NAMESPACE_ARRAY <<< "$ALL_NAMESPACES"
+          IFS=',' read -ra NAMESPACE_ARRAY <<< "$NAMESPACES"
           for NAMESPACE in "${NAMESPACE_ARRAY[@]}"; do
             NAMESPACE_FILE_PATH="mesh-admin/${NAMESPACE}-namespace.yaml"
 
@@ -126,13 +120,9 @@ jobs:
 
       - name: Commit and push Workspace and WorkspaceSettings manifests
         run: |
-          if [[ -f "mesh-admin/${WORKSPACE_NAME}-workspace.yaml" && -f "mesh-admin/${WORKSPACE_NAME}-workspacesettings.yaml" ]]; then
-            git add mesh-admin/${WORKSPACE_NAME}-workspace.yaml mesh-admin/${WORKSPACE_NAME}-workspacesettings.yaml
-            git commit -m "Created/Updated Workspace and WorkspaceSettings for workspace ${{ github.event.inputs.workspace_name }}"
-            git push origin $BRANCH_NAME
-          else
-            echo "Workspace and WorkspaceSettings files do not exist."
-          fi
+          git add mesh-admin/${WORKSPACE_NAME}-workspace.yaml mesh-admin/${WORKSPACE_NAME}-workspacesettings.yaml
+          git commit -m "Created/Updated Workspace and WorkspaceSettings for workspace ${{ github.event.inputs.workspace_name }}"
+          git push origin $BRANCH_NAME
 
       - name: Create or update RouteTable manifests
         run: |
