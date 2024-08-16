@@ -7,6 +7,14 @@ metadata:
     workspace: gh-action-idp
 spec:
   http:
+  - name: redirect
+    # Prefix matching for the old path
+    matchers:
+    - uri:
+        prefix: /team-a
+    # Redirection to the desired path
+    redirect:
+      pathRedirect: /
   - name: gh-action-idp-team-a-delegate
     matchers:
     - uri:
@@ -14,7 +22,6 @@ spec:
     - uri:
         prefix: /team-a/ip
     forwardTo:
-      pathRewrite: /
       destinations:
       - kind: SERVICE
         ref:
