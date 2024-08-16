@@ -14,9 +14,15 @@ spec:
       name: httpbin
       namespace: gh-action-idp
   http:
-  - name: team-a-root
+  - name: team-a-get
     matchers:
     - uri:
-        prefix: /
+        prefix: /get
     forwardTo:
-      pathRewrite: /
+      pathRewrite: /get
+  - name: team-a-ip
+    matchers:
+    - uri:
+        prefix: /ip
+    forwardTo:
+      pathRewrite: /ip
