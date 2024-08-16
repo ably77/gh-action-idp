@@ -27,7 +27,27 @@ spec:
         securityContext:
           runAsUser: 1001
         env:
-        {{- range $key, $value := .Values.env }}
-        - name: "{{ $key }}"
-          value: "{{ $value }}"
-        {{- end }}
+        - name: "HTTP_CLIENT_KEEP_ALIVES"
+          value: "{{ .Values.env.HTTP_CLIENT_KEEP_ALIVES }}"
+        - name: "HTTP_CLIENT_REQUEST_TIMEOUT"
+          value: "{{ .Values.env.HTTP_CLIENT_REQUEST_TIMEOUT }}"
+        - name: "HTTP_SERVER_KEEP_ALIVES"
+          value: "{{ .Values.env.HTTP_SERVER_KEEP_ALIVES }}"
+        - name: "LISTEN_ADDR"
+          value: "{{ .Values.env.LISTEN_ADDR }}"
+        - name: "MESSAGE"
+          value: "{{ .Values.env.MESSAGE }}"
+        - name: "NAME"
+          value: "{{ .Values.env.NAME }}"
+        - name: "SERVER_TYPE"
+          value: "{{ .Values.env.SERVER_TYPE }}"
+        - name: "TIMING_50_PERCENTILE"
+          value: "{{ .Values.env.TIMING_50_PERCENTILE }}"
+        - name: "TIMING_90_PERCENTILE"
+          value: "{{ .Values.env.TIMING_90_PERCENTILE }}"
+        - name: "TIMING_99_PERCENTILE"
+          value: "{{ .Values.env.TIMING_99_PERCENTILE }}"
+        - name: "UPSTREAM_URIS"
+          value: "{{ .Values.env.UPSTREAM_URIS }}"
+        - name: "UPSTREAM_WORKERS"
+          value: "{{ .Values.env.UPSTREAM_WORKERS }}"

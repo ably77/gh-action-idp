@@ -14,9 +14,9 @@ service:
 
 env:
   LISTEN_ADDR: "0.0.0.0:8080"
-  NAME: "{{ .Values.app.name }}"
+  NAME: "tier-1-app-a"
   SERVER_TYPE: "http"
-  MESSAGE: "Hello From {{ .Values.app.name }} !"
+  MESSAGE: "Hello From tier-1-app-a !"
   UPSTREAM_URIS: ""
   UPSTREAM_WORKERS: "1"
   TIMING_50_PERCENTILE: "0ms"
