@@ -49,8 +49,9 @@ jobs:
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
           TEAM_NAME=${{ github.event.inputs.team_name }}
 
-          echo "Creating file apps/${WORKSPACE_NAME}-${TEAM_NAME}-sample-service.yaml"
-          cat <<EOF > apps/${WORKSPACE_NAME}-${TEAM_NAME}-sample-service.yaml
+          FILE_PATH="apps/${WORKSPACE_NAME}-${TEAM_NAME}-sample-service.yaml"
+          echo "Creating file $FILE_PATH"
+          cat <<EOF > $FILE_PATH
           apiVersion: argoproj.io/v1alpha1
           kind: Application
           metadata:
