@@ -1,5 +1,8 @@
 namespace: ns-1
 
+istio:
+  revision: "1-22"
+
 app:
   name: tier-1-app-a
   tier: "1"

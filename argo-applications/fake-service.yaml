@@ -8,7 +8,6 @@ metadata:
 spec:
   project: default
   destination:
-    namespace: ns-1
     server: "https://kubernetes.default.svc"
   source:
     repoURL: 'https://github.com/ably77/gh-action-idp'
@@ -16,10 +15,13 @@ spec:
     path: fake-service-helm-chart
     helm:
       values: |
-        namespace: ns-1
+        namespace: team-a
+
+        istio:
+          revision: "1-22"
 
         app:
-          name: tier-1-app-a
+          name: team-a-app-a
           tier: "1"
           replicas: 1
           image:
@@ -32,9 +34,9 @@ spec:
 
         env:
           LISTEN_ADDR: "0.0.0.0:8080"
-          NAME: "tier-1-app-a"
+          NAME: "team-a-app-a"
           SERVER_TYPE: "http"
-          MESSAGE: "Hello From tier-1-app-a !"
+          MESSAGE: "Hello From team-a-app-a !"
           UPSTREAM_URIS: ""
           UPSTREAM_WORKERS: "1"
           TIMING_50_PERCENTILE: "0ms"
