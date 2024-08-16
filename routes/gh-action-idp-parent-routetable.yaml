@@ -11,10 +11,10 @@ spec:
       namespace: istio-gateways
       cluster: mgmt
   http:
-    - delegate:
+    - matchers:
+        - uri:
+            prefix: /team-a
+      delegate:
         routeTables:
           - labels:
               workspace: gh-action-idp
-        matchers:
-          - uri:
-              prefix: /team-a
