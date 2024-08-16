@@ -64,19 +64,19 @@ jobs:
           MATCHERS=${{ github.event.inputs.matchers }}
           DESTINATION_KIND=${{ github.event.inputs.destination_kind || 'SERVICE' }}
           DESTINATION_NAME=${{ github.event.inputs.destination_name }}
-          DESTINATION_PORT=${{ github.event.inputs.destination_port }}      
-
+          DESTINATION_PORT=${{ github.event.inputs.destination_port }}
+      
           # Assign DESTINATION_NAMESPACE, defaulting to WORKSPACE_NAME if not provided
           if [ -z "${{ github.event.inputs.destination_namespace }}" ]; then
             DESTINATION_NAMESPACE=$WORKSPACE_NAME
           else
             DESTINATION_NAMESPACE=${{ github.event.inputs.destination_namespace }}
-          fi      
-
+          fi
+      
           # Use the destination_name as part of the name to make it unique
           ROUTETABLE_NAME="${WORKSPACE_NAME}-${TEAM_NAME}-${DESTINATION_NAME}-delegate"
-          ROUTETABLE_FILE_PATH="routes/${ROUTETABLE_NAME}.yaml"      
-
+          ROUTETABLE_FILE_PATH="routes/${ROUTETABLE_NAME}.yaml"
+      
           # Create or overwrite the RouteTable file
           echo "apiVersion: networking.gloo.solo.io/v2" > $ROUTETABLE_FILE_PATH
           echo "kind: RouteTable" >> $ROUTETABLE_FILE_PATH
@@ -93,8 +93,8 @@ jobs:
           echo "    ref:" >> $ROUTETABLE_FILE_PATH
           echo "      name: ${DESTINATION_NAME}" >> $ROUTETABLE_FILE_PATH
           echo "      namespace: ${DESTINATION_NAMESPACE}" >> $ROUTETABLE_FILE_PATH
-          echo "  http:" >> $ROUTETABLE_FILE_PATH      
-
+          echo "  http:" >> $ROUTETABLE_FILE_PATH
+      
           # Split the matchers and write each one into the YAML file
           IFS=',' read -ra MATCHER_ARRAY <<< "$MATCHERS"
           for MATCHER in "${MATCHER_ARRAY[@]}"; do
@@ -115,10 +115,11 @@ jobs:
               echo "      pathRewrite: /${MATCHER}" >> $ROUTETABLE_FILE_PATH
             fi
           done
+      
+          # Print the contents of the file for debugging
+          echo "Contents of $ROUTETABLE_FILE_PATH:"
+          cat $ROUTETABLE_FILE_PATH
 
-    # Print the contents of the file for debugging
-    echo "Contents of $ROUTETABLE_FILE_PATH:"
-    cat $ROUTETABLE_FILE_PATH
           
       - name: Commit and push changes
         run: |
