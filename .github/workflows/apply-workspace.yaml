@@ -94,7 +94,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git add $ROUTETABLE_FILE_PATH  # Track the new file
+          git add .  # Track all changes, including new files
           git commit -m "Created/Updated RouteTable for workspace ${{ github.event.inputs.workspace_name }} with teams ${{ github.event.inputs.team_names }}" || echo "No changes to commit"
           git push origin $BRANCH_NAME
 
