@@ -117,7 +117,7 @@ jobs:
             echo "        routeTables:" >> $ROUTETABLE_FILE_PATH
             echo "          - labels:" >> $ROUTETABLE_FILE_PATH
             echo "              workspace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
-            echo "              team: ${TEAM_NAME}" >> $ROUTETABLE_FILE_PATH
+            echo "              team: ${TEAM}" >> $ROUTETABLE_FILE_PATH
           done
 
           echo "WORKSPACE_FILE_PATH=$WORKSPACE_FILE_PATH" >> $GITHUB_ENV
