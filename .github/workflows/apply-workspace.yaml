@@ -34,6 +34,22 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
 
+      - name: Create namespace manifest file in GitHub
+        run: |
+          WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
+
+          NAMESPACE_FILE_PATH="mesh-admin/${WORKSPACE_NAME}-namespace.yaml"
+
+          # Create or overwrite the Namespace manifest file
+          echo "apiVersion: v1" > $NAMESPACE_FILE_PATH
+          echo "kind: Namespace" >> $NAMESPACE_FILE_PATH
+          echo "metadata:" >> $NAMESPACE_FILE_PATH
+          echo "  name: ${WORKSPACE_NAME}" >> $NAMESPACE_FILE_PATH
+
+          # Print the contents of the file for debugging
+          echo "Contents of $NAMESPACE_FILE_PATH:"
+          cat $NAMESPACE_FILE_PATH
+
       - name: Create a branch for update
         id: create_branch
         run: |
@@ -136,7 +152,7 @@ jobs:
       - name: Commit and push changes
         run: |
           git add .
-          git commit -m "Created/Updated Workspace, WorkspaceSettings, and RouteTable for workspace ${{ github.event.inputs.workspace_name }} with teams ${{ github.event.inputs.team_names }}" || echo "No changes to commit"
+          git commit -m "Created/Updated Namespace, Workspace, WorkspaceSettings, and RouteTable for workspace ${{ github.event.inputs.workspace_name }} with teams ${{ github.event.inputs.team_names }}" || echo "No changes to commit"
           git push origin $BRANCH_NAME
 
       - name: Merge branch into main
