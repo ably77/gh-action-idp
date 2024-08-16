@@ -60,6 +60,9 @@ jobs:
           echo "  - name: '*'" >> $WORKSPACE_FILE_PATH
           echo "    namespaces:" >> $WORKSPACE_FILE_PATH
 
+          # Add WORKSPACE_NAME as a namespace and then split the namespaces input
+          echo "      - name: ${WORKSPACE_NAME}" >> $WORKSPACE_FILE_PATH
+
           # Split the namespaces and write each one into the YAML file
           IFS=',' read -ra NAMESPACE_ARRAY <<< "$NAMESPACES"
           for NAMESPACE in "${NAMESPACE_ARRAY[@]}"; do
