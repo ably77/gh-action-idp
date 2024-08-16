@@ -51,3 +51,5 @@ spec:
           value: "{{ .Values.env.UPSTREAM_URIS }}"
         - name: "UPSTREAM_WORKERS"
           value: "{{ .Values.env.UPSTREAM_WORKERS }}"
+        - name: "UI_PATH"
+          value: "{{ .Values.env.UI_PATH }}"

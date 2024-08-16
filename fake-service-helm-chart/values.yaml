@@ -28,3 +28,4 @@ env:
   HTTP_CLIENT_REQUEST_TIMEOUT: "1s"
   HTTP_SERVER_KEEP_ALIVES: "true"
   HTTP_CLIENT_KEEP_ALIVES: "true"
+  UI_PATH: "/team-b/ui"
