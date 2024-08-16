@@ -9,9 +9,9 @@ on:
         default: 'gh-action-idp'
         type: string
       namespaces:
-        description: 'Comma-separated list of namespaces to include in the Workspace and create corresponding RouteTable matchers'
+        description: 'Comma-separated list of namespaces to include in the Workspace. Namespaces will be mapped 1:1 to teams. These will be turned into nested prefix matchers such as /team-a and /team-b
         required: true
-        default: 'gh-action-idp'
+        default: 'team-a,team-b'
         type: string
 
 permissions:
@@ -35,8 +35,11 @@ jobs:
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
           NAMESPACES=${{ github.event.inputs.namespaces }}
 
+          # Add WORKSPACE_NAME to the list of namespaces
+          ALL_NAMESPACES="${WORKSPACE_NAME},${NAMESPACES}"
+
           # Split the namespaces and create manifest files for each one
-          IFS=',' read -ra NAMESPACE_ARRAY <<< "$NAMESPACES"
+          IFS=',' read -ra NAMESPACE_ARRAY <<< "$ALL_NAMESPACES"
           for NAMESPACE in "${NAMESPACE_ARRAY[@]}"; do
             NAMESPACE_FILE_PATH="mesh-admin/${NAMESPACE}-namespace.yaml"
 
