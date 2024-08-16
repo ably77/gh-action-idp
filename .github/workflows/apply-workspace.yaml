@@ -9,9 +9,9 @@ on:
         default: 'gh-action-idp'
         type: string
       namespaces:
-        description: 'Comma-separated list of namespaces to include in the Workspace and create corresponding RouteTable matchers'
+        description: 'Comma-separated list of namespaces to include in the Workspace. Namespaces will be mapped 1:1 to teams.'
         required: true
-        default: 'gh-action-idp'
+        default: 'team-a,team-b'
         type: string
 
 permissions:
@@ -30,28 +30,21 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
 
-      - name: Create namespace manifest files in GitHub
+      - name: Create namespace manifest file in GitHub
         run: |
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
-          NAMESPACES=${{ github.event.inputs.namespaces }}
 
-          # Split the namespaces and create manifest files for each one
-          IFS=',' read -ra NAMESPACE_ARRAY <<< "$NAMESPACES"
-          for NAMESPACE in "${NAMESPACE_ARRAY[@]}"; do
-            NAMESPACE_FILE_PATH="mesh-admin/${NAMESPACE}-namespace.yaml"
+          NAMESPACE_FILE_PATH="mesh-admin/${WORKSPACE_NAME}-namespace.yaml"
 
-            # Create or overwrite the Namespace manifest file
-            echo "apiVersion: v1" > $NAMESPACE_FILE_PATH
-            echo "kind: Namespace" >> $NAMESPACE_FILE_PATH
-            echo "metadata:" >> $NAMESPACE_FILE_PATH
-            echo "  name: ${NAMESPACE}" >> $NAMESPACE_FILE_PATH
-            echo "  labels:" >> $NAMESPACE_FILE_PATH
-            echo "    istio.io/rev: 1-22" >> $NAMESPACE_FILE_PATH
+          # Create or overwrite the Namespace manifest file
+          echo "apiVersion: v1" > $NAMESPACE_FILE_PATH
+          echo "kind: Namespace" >> $NAMESPACE_FILE_PATH
+          echo "metadata:" >> $NAMESPACE_FILE_PATH
+          echo "  name: ${WORKSPACE_NAME}" >> $NAMESPACE_FILE_PATH
 
-            # Print the contents of the file for debugging
-            echo "Contents of $NAMESPACE_FILE_PATH:"
-            cat $NAMESPACE_FILE_PATH
-          done
+          # Print the contents of the file for debugging
+          echo "Contents of $NAMESPACE_FILE_PATH:"
+          cat $NAMESPACE_FILE_PATH
 
       - name: Create a branch for update
         id: create_branch
@@ -59,12 +52,6 @@ jobs:
           BRANCH_NAME="workspace-update-${{ github.run_id }}-${{ github.event.inputs.workspace_name }}"
           git checkout -b $BRANCH_NAME
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
-
-      - name: Commit and push namespace manifest files
-        run: |
-          git add mesh-admin/*.yaml
-          git commit -m "Created Namespace manifests for workspace ${{ github.event.inputs.workspace_name }} with namespaces ${{ github.event.inputs.namespaces }}"
-          git push origin $BRANCH_NAME
 
       - name: Create or update Workspace and WorkspaceSettings manifests
         run: |
@@ -118,12 +105,6 @@ jobs:
           echo "Contents of $WORKSPACE_SETTINGS_FILE_PATH:"
           cat $WORKSPACE_SETTINGS_FILE_PATH
 
-      - name: Commit and push Workspace and WorkspaceSettings manifests
-        run: |
-          git add mesh-admin/${WORKSPACE_NAME}-workspace.yaml mesh-admin/${WORKSPACE_NAME}-workspacesettings.yaml
-          git commit -m "Created/Updated Workspace and WorkspaceSettings for workspace ${{ github.event.inputs.workspace_name }}"
-          git push origin $BRANCH_NAME
-
       - name: Create or update RouteTable manifests
         run: |
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
@@ -164,10 +145,10 @@ jobs:
           echo "Contents of $ROUTETABLE_FILE_PATH:"
           cat $ROUTETABLE_FILE_PATH
 
-      - name: Commit and push RouteTable manifest
+      - name: Commit and push changes
         run: |
-          git add routes/${WORKSPACE_NAME}-parent-routetable.yaml
-          git commit -m "Created/Updated RouteTable for workspace ${{ github.event.inputs.workspace_name }}"
+          git add .
+          git commit -m "Created/Updated Namespace, Workspace, WorkspaceSettings, and RouteTable for workspace ${{ github.event.inputs.workspace_name }} with namespaces ${{ github.event.inputs.namespaces }}" || echo "No changes to commit"
           git push origin $BRANCH_NAME
 
       - name: Merge branch into main
