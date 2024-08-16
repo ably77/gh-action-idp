@@ -21,7 +21,7 @@ spec:
           revision: "1-22"
 
         app:
-          name: app-team-b
+          name: fake-service-team-b
           tier: "1"
           replicas: 1
           image:
@@ -34,9 +34,9 @@ spec:
 
         env:
           LISTEN_ADDR: "0.0.0.0:8080"
-          NAME: "app-team-b"
+          NAME: "fake-service-team-b"
           SERVER_TYPE: "http"
-          MESSAGE: "Hello From app-team-b !"
+          MESSAGE: "Hello From fake-service-team-b !"
           UPSTREAM_URIS: ""
           UPSTREAM_WORKERS: "1"
           TIMING_50_PERCENTILE: "0ms"
