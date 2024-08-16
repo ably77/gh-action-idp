@@ -1,0 +1,22 @@
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: gh-action-idp-team-b-sample-service-team-b-delegate
+  namespace: gh-action-idp
+  labels:
+    workspace: gh-action-idp
+    team: team-b
+spec:
+  defaultDestination:
+    port:
+      number: 8080
+    ref:
+      name: sample-service-team-b
+      namespace: team-b
+  http:
+  - name: team-b-root
+    matchers:
+    - uri:
+        prefix: /
+    forwardTo:
+      pathRewrite: /
