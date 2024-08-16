@@ -33,15 +33,17 @@ jobs:
       - name: Create namespace manifest file in GitHub
         run: |
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
-
+      
           NAMESPACE_FILE_PATH="mesh-admin/${WORKSPACE_NAME}-namespace.yaml"
-
+      
           # Create or overwrite the Namespace manifest file
           echo "apiVersion: v1" > $NAMESPACE_FILE_PATH
           echo "kind: Namespace" >> $NAMESPACE_FILE_PATH
           echo "metadata:" >> $NAMESPACE_FILE_PATH
           echo "  name: ${WORKSPACE_NAME}" >> $NAMESPACE_FILE_PATH
-
+          echo "  labels:" >> $NAMESPACE_FILE_PATH
+          echo "    istio.io/rev: 1-22" >> $NAMESPACE_FILE_PATH
+      
           # Print the contents of the file for debugging
           echo "Contents of $NAMESPACE_FILE_PATH:"
           cat $NAMESPACE_FILE_PATH
