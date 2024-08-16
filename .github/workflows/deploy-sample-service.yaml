@@ -6,17 +6,19 @@ on:
       workspace_name:
         description: 'The name of the Workspace'
         required: true
+        default: 'gh-action-idp'
         type: string
       team_name:
-        description: 'The name of the team'
+        description: 'The name of the Team'
         required: true
+        default: 'team-b'
         type: string
 
 permissions:
   contents: write
 
 jobs:
-  deploy-service:
+  deploy-sample-service:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,102 +30,98 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
 
-      - name: Create a unique branch
-        id: create_branch
+      - name: Ensure /apps directory exists
         run: |
-          BRANCH_NAME="deploy-service-${{ github.run_id }}-${{ github.event.inputs.workspace_name }}-${{ github.event.inputs.team_name }}"
-          git checkout -b $BRANCH_NAME
-          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+          mkdir -p apps
 
-      - name: Create apps directory
-        run: mkdir -p apps
-
-      - name: Debug inputs
-        run: |
-          echo "WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}"
-          echo "TEAM_NAME=${{ github.event.inputs.team_name }}"
-
-      - name: Create Application manifest
-        id: create_manifest
+      - name: Create Application manifest file in /apps directory
         run: |
           WORKSPACE_NAME=${{ github.event.inputs.workspace_name }}
           TEAM_NAME=${{ github.event.inputs.team_name }}
+          APP_FILE_PATH="apps/${WORKSPACE_NAME}-${TEAM_NAME}-app.yaml"
 
-          FILE_PATH="apps/${WORKSPACE_NAME}-${TEAM_NAME}-sample-service.yaml"
-          echo "Creating file $FILE_PATH"
-          cat <<EOF > $FILE_PATH
-          apiVersion: argoproj.io/v1alpha1
-          kind: Application
-          metadata:
-            name: fake-service
-            namespace: argocd
-            finalizers:
-              - resources-finalizer.argocd.argoproj.io
-          spec:
-            project: default
-            destination:
-              server: "https://kubernetes.default.svc"
-            source:
-              repoURL: 'https://github.com/ably77/gh-action-idp'
-              targetRevision: HEAD
-              path: fake-service-helm-chart
-              helm:
-                values: |
-                  namespace: ${TEAM_NAME}
+          # Create or overwrite the Application manifest file
+          echo "apiVersion: argoproj.io/v1alpha1" > $APP_FILE_PATH
+          echo "kind: Application" >> $APP_FILE_PATH
+          echo "metadata:" >> $APP_FILE_PATH
+          echo "  name: fake-service" >> $APP_FILE_PATH
+          echo "  namespace: argocd" >> $APP_FILE_PATH
+          echo "  finalizers:" >> $APP_FILE_PATH
+          echo "    - resources-finalizer.argocd.argoproj.io" >> $APP_FILE_PATH
+          echo "spec:" >> $APP_FILE_PATH
+          echo "  project: default" >> $APP_FILE_PATH
+          echo "  destination:" >> $APP_FILE_PATH
+          echo "    server: \"https://kubernetes.default.svc\"" >> $APP_FILE_PATH
+          echo "  source:" >> $APP_FILE_PATH
+          echo "    repoURL: 'https://github.com/ably77/gh-action-idp'" >> $APP_FILE_PATH
+          echo "    targetRevision: HEAD" >> $APP_FILE_PATH
+          echo "    path: fake-service-helm-chart" >> $APP_FILE_PATH
+          echo "    helm:" >> $APP_FILE_PATH
+          echo "      values: |" >> $APP_FILE_PATH
+          echo "        namespace: ${TEAM_NAME}" >> $APP_FILE_PATH
+          echo "" >> $APP_FILE_PATH
+          echo "        istio:" >> $APP_FILE_PATH
+          echo "          revision: \"1-22\"" >> $APP_FILE_PATH
+          echo "" >> $APP_FILE_PATH
+          echo "        app:" >> $APP_FILE_PATH
+          echo "          name: app-${TEAM_NAME}" >> $APP_FILE_PATH
+          echo "          tier: \"1\"" >> $APP_FILE_PATH
+          echo "          replicas: 1" >> $APP_FILE_PATH
+          echo "          image:" >> $APP_FILE_PATH
+          echo "            repository: nicholasjackson/fake-service" >> $APP_FILE_PATH
+          echo "            tag: v0.26.2" >> $APP_FILE_PATH
+          echo "" >> $APP_FILE_PATH
+          echo "        service:" >> $APP_FILE_PATH
+          echo "          port: 8080" >> $APP_FILE_PATH
+          echo "          targetPort: 8080" >> $APP_FILE_PATH
+          echo "" >> $APP_FILE_PATH
+          echo "        env:" >> $APP_FILE_PATH
+          echo "          LISTEN_ADDR: \"0.0.0.0:8080\"" >> $APP_FILE_PATH
+          echo "          NAME: \"app-${TEAM_NAME}\"" >> $APP_FILE_PATH
+          echo "          SERVER_TYPE: \"http\"" >> $APP_FILE_PATH
+          echo "          MESSAGE: \"Hello From app-${TEAM_NAME} !\"" >> $APP_FILE_PATH
+          echo "          UPSTREAM_URIS: \"\"" >> $APP_FILE_PATH
+          echo "          UPSTREAM_WORKERS: \"1\"" >> $APP_FILE_PATH
+          echo "          TIMING_50_PERCENTILE: \"0ms\"" >> $APP_FILE_PATH
+          echo "          TIMING_90_PERCENTILE: \"0ms\"" >> $APP_FILE_PATH
+          echo "          TIMING_99_PERCENTILE: \"0ms\"" >> $APP_FILE_PATH
+          echo "          HTTP_CLIENT_REQUEST_TIMEOUT: \"1s\"" >> $APP_FILE_PATH
+          echo "          HTTP_SERVER_KEEP_ALIVES: \"true\"" >> $APP_FILE_PATH
+          echo "          HTTP_CLIENT_KEEP_ALIVES: \"true\"" >> $APP_FILE_PATH
+          echo "" >> $APP_FILE_PATH
+          echo "  syncPolicy:" >> $APP_FILE_PATH
+          echo "    automated:" >> $APP_FILE_PATH
+          echo "      prune: true" >> $APP_FILE_PATH
+          echo "      selfHeal: true" >> $APP_FILE_PATH
 
-                  istio:
-                    revision: "1-22"
+          # Print the contents of the file for debugging
+          echo "Contents of $APP_FILE_PATH:"
+          cat $APP_FILE_PATH
 
-                  app:
-                    name: app-${TEAM_NAME}
-                    tier: "1"
-                    replicas: 1
-                    image:
-                      repository: nicholasjackson/fake-service
-                      tag: v0.26.2        
-
-                  service:
-                    port: 8080
-                    targetPort: 8080        
-
-                  env:
-                    LISTEN_ADDR: "0.0.0.0:8080"
-                    NAME: "app-${TEAM_NAME}"
-                    SERVER_TYPE: "http"
-                    MESSAGE: "Hello From app-${TEAM_NAME}!"
-                    UPSTREAM_URIS: ""
-                    UPSTREAM_WORKERS: "1"
-                    TIMING_50_PERCENTILE: "0ms"
-                    TIMING_90_PERCENTILE: "0ms"
-                    TIMING_99_PERCENTILE: "0ms"
-                    HTTP_CLIENT_REQUEST_TIMEOUT: "1s"
-                    HTTP_SERVER_KEEP_ALIVES: "true"
-                    HTTP_CLIENT_KEEP_ALIVES: "true"
-
-            syncPolicy:
-              automated:
-                prune: true
-                selfHeal: true
-          EOF
+      - name: Create a branch for update
+        id: create_branch
+        run: |
+          BRANCH_NAME="app-deploy-${{ github.run_id }}-${{ github.event.inputs.workspace_name }}-${{ github.event.inputs.team_name }}"
+          git checkout -b $BRANCH_NAME
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
       - name: Commit and push changes
         run: |
-          git add apps/${WORKSPACE_NAME}-${TEAM_NAME}-sample-service.yaml
-          git commit -m "Deployed sample service for workspace ${{ github.event.inputs.workspace_name }} and team ${{ github.event.inputs.team_name }} using GitHub Action"
-          for i in {1..5}; do
-            git push origin ${{ env.BRANCH_NAME }} && break || (git fetch origin main && git rebase origin/main && sleep $((i*2)))
-          done
+          git add .
+          git commit -m "Created Application manifest for ${WORKSPACE_NAME} and ${TEAM_NAME}" || echo "No changes to commit"
+          git push origin $BRANCH_NAME
 
       - name: Merge branch into main
         run: |
-          for i in {1..5}; do
-            git fetch origin main
-            git checkout main
-            git pull origin main
-            git merge --allow-unrelated-histories --no-ff ${{ env.BRANCH_NAME }}
-            git push origin main && break || (git pull --rebase origin main && sleep $((i*2)))
-          done
+          git fetch origin main
+          git checkout main
+          git pull origin main
+          git merge --allow-unrelated-histories --no-ff $BRANCH_NAME || {
+            git merge --strategy-option theirs --no-commit --no-ff $BRANCH_NAME &&
+            git commit -m "Resolve merge conflict by keeping new changes"
+          }
+          git push origin main || (git pull --rebase origin main && git push origin main)
 
       - name: Delete branch after merge
         run: |
-          git push origin --delete ${{ env.BRANCH_NAME }}
+          git push origin --delete $BRANCH_NAME
