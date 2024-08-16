@@ -14,7 +14,7 @@ on:
         default: 'gh-action-idp'
         type: string
       team_names:
-        description: 'Comma-separated list of team names'
+        description: 'Comma-separated list of team names. These will be turned into nested prefix matchers such as /team-a and /team-b'
         required: true
         type: string
 
