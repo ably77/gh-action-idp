@@ -6,6 +6,7 @@ on:
       route_name:
         description: 'RouteTable name to delete'
         required: true
+        default: 'gh-action-idp-$input-routetable'
         type: string
 
 permissions:
