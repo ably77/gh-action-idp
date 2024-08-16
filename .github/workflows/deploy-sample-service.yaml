@@ -64,7 +64,7 @@ jobs:
           echo "          revision: \"1-22\"" >> $APP_FILE_PATH
           echo "" >> $APP_FILE_PATH
           echo "        app:" >> $APP_FILE_PATH
-          echo "          name: app-${TEAM_NAME}" >> $APP_FILE_PATH
+          echo "          name: fake-service-${TEAM_NAME}" >> $APP_FILE_PATH
           echo "          tier: \"1\"" >> $APP_FILE_PATH
           echo "          replicas: 1" >> $APP_FILE_PATH
           echo "          image:" >> $APP_FILE_PATH
@@ -77,9 +77,9 @@ jobs:
           echo "" >> $APP_FILE_PATH
           echo "        env:" >> $APP_FILE_PATH
           echo "          LISTEN_ADDR: \"0.0.0.0:8080\"" >> $APP_FILE_PATH
-          echo "          NAME: \"app-${TEAM_NAME}\"" >> $APP_FILE_PATH
+          echo "          NAME: \"fake-service-${TEAM_NAME}\"" >> $APP_FILE_PATH
           echo "          SERVER_TYPE: \"http\"" >> $APP_FILE_PATH
-          echo "          MESSAGE: \"Hello From app-${TEAM_NAME} !\"" >> $APP_FILE_PATH
+          echo "          MESSAGE: \"Hello From fake-service-${TEAM_NAME} !\"" >> $APP_FILE_PATH
           echo "          UPSTREAM_URIS: \"\"" >> $APP_FILE_PATH
           echo "          UPSTREAM_WORKERS: \"1\"" >> $APP_FILE_PATH
           echo "          TIMING_50_PERCENTILE: \"0ms\"" >> $APP_FILE_PATH
@@ -108,7 +108,7 @@ jobs:
       - name: Commit and push changes
         run: |
           git add .
-          git commit -m "Created Application manifest for ${WORKSPACE_NAME} and ${TEAM_NAME}" || echo "No changes to commit"
+          git commit -m "Created Application manifest for ${{ github.event.inputs.workspace_name }} and ${{ github.event.inputs.team_name }}" || echo "No changes to commit"
           git push origin $BRANCH_NAME
 
       - name: Merge branch into main
