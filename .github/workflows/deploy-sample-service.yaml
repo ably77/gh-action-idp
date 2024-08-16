@@ -55,7 +55,7 @@ jobs:
           echo "  source:" >> $APP_FILE_PATH
           echo "    repoURL: 'https://github.com/ably77/gh-action-idp'" >> $APP_FILE_PATH
           echo "    targetRevision: HEAD" >> $APP_FILE_PATH
-          echo "    path: sample-service-helm-chart" >> $APP_FILE_PATH
+          echo "    path: fake-service-helm-chart" >> $APP_FILE_PATH
           echo "    helm:" >> $APP_FILE_PATH
           echo "      values: |" >> $APP_FILE_PATH
           echo "        namespace: ${TEAM_NAME}" >> $APP_FILE_PATH
