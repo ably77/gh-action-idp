@@ -1,0 +1,31 @@
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: gh-action-idp-parent
+  namespace: ops-team-config
+spec:
+  hosts:
+    - 'gh-action-idp.demo.glooplatform.com'
+  virtualGateways:
+    - name: mgmt-north-south-gw-443
+      namespace: istio-gateways
+      cluster: mgmt
+  http:
+    - name: gh-action-idp-a
+      matchers:
+        - uri:
+            prefix: /a
+      delegate:
+        routeTables:
+          - labels:
+              workspace: gh-action-idp
+              team: a
+    - name: gh-action-idp-b
+      matchers:
+        - uri:
+            prefix: /b
+      delegate:
+        routeTables:
+          - labels:
+              workspace: gh-action-idp
+              team: b
