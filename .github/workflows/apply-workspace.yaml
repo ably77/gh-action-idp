@@ -48,45 +48,34 @@ jobs:
 
           ROUTETABLE_FILE_PATH="routes/${WORKSPACE_NAME}-parent-routetable.yaml"
 
-          if [ -f "$ROUTETABLE_FILE_PATH" ]; then
-            echo "Updating existing RouteTable at $ROUTETABLE_FILE_PATH"
-            # Update the existing RouteTable
-            IFS=',' read -ra TEAM_ARRAY <<< "$TEAM_NAMES"
-            for TEAM in "${TEAM_ARRAY[@]}"; do
-              sed -i'' -e "s|prefix: /.*|prefix: /${TEAM}|g" $ROUTETABLE_FILE_PATH
-              sed -i'' -e "s|team: .*$|team: ${TEAM}|g" $ROUTETABLE_FILE_PATH
-              sed -i'' -e "s/name: .*/name: ${WORKSPACE_NAME}-${TEAM}/g" $ROUTETABLE_FILE_PATH
-            done
-          else
-            echo "Creating new RouteTable at $ROUTETABLE_FILE_PATH"
-            mkdir -p routes
-            echo "apiVersion: networking.gloo.solo.io/v2" > $ROUTETABLE_FILE_PATH
-            echo "kind: RouteTable" >> $ROUTETABLE_FILE_PATH
-            echo "metadata:" >> $ROUTETABLE_FILE_PATH
-            echo "  name: ${WORKSPACE_NAME}-parent" >> $ROUTETABLE_FILE_PATH
-            echo "  namespace: ops-team-config" >> $ROUTETABLE_FILE_PATH
-            echo "spec:" >> $ROUTETABLE_FILE_PATH
-            echo "  hosts:" >> $ROUTETABLE_FILE_PATH
-            echo "    - '${WORKSPACE_NAME}.demo.glooplatform.com'" >> $ROUTETABLE_FILE_PATH
-            echo "  virtualGateways:" >> $ROUTETABLE_FILE_PATH
-            echo "    - name: mgmt-north-south-gw-443" >> $ROUTETABLE_FILE_PATH
-            echo "      namespace: istio-gateways" >> $ROUTETABLE_FILE_PATH
-            echo "      cluster: mgmt" >> $ROUTETABLE_FILE_PATH
-            echo "  http:" >> $ROUTETABLE_FILE_PATH
+          # Create or overwrite the RouteTable file
+          echo "apiVersion: networking.gloo.solo.io/v2" > $ROUTETABLE_FILE_PATH
+          echo "kind: RouteTable" >> $ROUTETABLE_FILE_PATH
+          echo "metadata:" >> $ROUTETABLE_FILE_PATH
+          echo "  name: ${WORKSPACE_NAME}-parent" >> $ROUTETABLE_FILE_PATH
+          echo "  namespace: ops-team-config" >> $ROUTETABLE_FILE_PATH
+          echo "spec:" >> $ROUTETABLE_FILE_PATH
+          echo "  hosts:" >> $ROUTETABLE_FILE_PATH
+          echo "    - '${WORKSPACE_NAME}.demo.glooplatform.com'" >> $ROUTETABLE_FILE_PATH
+          echo "  virtualGateways:" >> $ROUTETABLE_FILE_PATH
+          echo "    - name: mgmt-north-south-gw-443" >> $ROUTETABLE_FILE_PATH
+          echo "      namespace: istio-gateways" >> $ROUTETABLE_FILE_PATH
+          echo "      cluster: mgmt" >> $ROUTETABLE_FILE_PATH
+          echo "  http:" >> $ROUTETABLE_FILE_PATH
 
-            IFS=',' read -ra TEAM_ARRAY <<< "$TEAM_NAMES"
-            for TEAM in "${TEAM_ARRAY[@]}"; do
-              echo "    - name: ${WORKSPACE_NAME}-${TEAM}" >> $ROUTETABLE_FILE_PATH
-              echo "      matchers:" >> $ROUTETABLE_FILE_PATH
-              echo "        - uri:" >> $ROUTETABLE_FILE_PATH
-              echo "            prefix: /${TEAM}" >> $ROUTETABLE_FILE_PATH
-              echo "      delegate:" >> $ROUTETABLE_FILE_PATH
-              echo "        routeTables:" >> $ROUTETABLE_FILE_PATH
-              echo "          - labels:" >> $ROUTETABLE_FILE_PATH
-              echo "              workspace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
-              echo "              team: ${TEAM}" >> $ROUTETABLE_FILE_PATH
-            done
-          fi
+          # Split the team names and write each route into the YAML file
+          IFS=',' read -ra TEAM_ARRAY <<< "$TEAM_NAMES"
+          for TEAM in "${TEAM_ARRAY[@]}"; do
+            echo "    - name: ${WORKSPACE_NAME}-${TEAM}" >> $ROUTETABLE_FILE_PATH
+            echo "      matchers:" >> $ROUTETABLE_FILE_PATH
+            echo "        - uri:" >> $ROUTETABLE_FILE_PATH
+            echo "            prefix: /${TEAM}" >> $ROUTETABLE_FILE_PATH
+            echo "      delegate:" >> $ROUTETABLE_FILE_PATH
+            echo "        routeTables:" >> $ROUTETABLE_FILE_PATH
+            echo "          - labels:" >> $ROUTETABLE_FILE_PATH
+            echo "              workspace: ${WORKSPACE_NAME}" >> $ROUTETABLE_FILE_PATH
+            echo "              team: ${TEAM}" >> $ROUTETABLE_FILE_PATH
+          done
 
           # Print the contents of the file for debugging
           echo "Contents of $ROUTETABLE_FILE_PATH:"
@@ -94,7 +83,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git add .  # Track all changes, including new files
+          git add .
           git commit -m "Created/Updated RouteTable for workspace ${{ github.event.inputs.workspace_name }} with teams ${{ github.event.inputs.team_names }}" || echo "No changes to commit"
           git push origin $BRANCH_NAME
 
