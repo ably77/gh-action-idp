@@ -1,4 +1,4 @@
-name: Apply Delegate Route
+name: Apply Delegate RouteTable
 
 on:
   workflow_dispatch:
