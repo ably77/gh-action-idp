@@ -96,12 +96,22 @@ jobs:
           # Split the matchers and write each one into the YAML file
           IFS=',' read -ra MATCHER_ARRAY <<< "$MATCHERS"
           for MATCHER in "${MATCHER_ARRAY[@]}"; do
-            echo "  - name: ${TEAM_NAME}-${MATCHER}" >> $ROUTETABLE_FILE_PATH
-            echo "    matchers:" >> $ROUTETABLE_FILE_PATH
-            echo "    - uri:" >> $ROUTETABLE_FILE_PATH
-            echo "        prefix: /${MATCHER}" >> $ROUTETABLE_FILE_PATH
-            echo "    forwardTo:" >> $ROUTETABLE_FILE_PATH
-            echo "      pathRewrite: /${MATCHER}" >> $ROUTETABLE_FILE_PATH
+            if [ "$MATCHER" = "/" ]; then
+              # Special handling for the root matcher
+              echo "  - name: ${TEAM_NAME}-root" >> $ROUTETABLE_FILE_PATH
+              echo "    matchers:" >> $ROUTETABLE_FILE_PATH
+              echo "    - uri:" >> $ROUTETABLE_FILE_PATH
+              echo "        prefix: /" >> $ROUTETABLE_FILE_PATH
+              echo "    forwardTo:" >> $ROUTETABLE_FILE_PATH
+              echo "      pathRewrite: /" >> $ROUTETABLE_FILE_PATH
+            else
+              echo "  - name: ${TEAM_NAME}-${MATCHER}" >> $ROUTETABLE_FILE_PATH
+              echo "    matchers:" >> $ROUTETABLE_FILE_PATH
+              echo "    - uri:" >> $ROUTETABLE_FILE_PATH
+              echo "        prefix: /${MATCHER}" >> $ROUTETABLE_FILE_PATH
+              echo "    forwardTo:" >> $ROUTETABLE_FILE_PATH
+              echo "      pathRewrite: /${MATCHER}" >> $ROUTETABLE_FILE_PATH
+            fi
           done
 
           # Print the contents of the file for debugging
