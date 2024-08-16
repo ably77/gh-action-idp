@@ -6,6 +6,7 @@ on:
       workspace_name:
         description: 'The name of the Workspace'
         required: true
+        default: 'gh-action-idp'
         type: string
       team_name:
         description: 'The name of the team'
