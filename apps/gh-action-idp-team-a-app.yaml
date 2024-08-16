@@ -25,7 +25,7 @@ spec:
           tier: "1"
           replicas: 1
           image:
-            repository: nicholasjackson/sample-service
+            repository: nicholasjackson/fake-service
             tag: v0.26.2
 
         service:
