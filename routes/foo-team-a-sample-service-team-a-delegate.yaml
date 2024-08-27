@@ -1,0 +1,22 @@
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: foo-team-a-sample-service-team-a-delegate
+  namespace: foo
+  labels:
+    workspace: foo
+    team: team-a
+spec:
+  defaultDestination:
+    port:
+      number: 8080
+    ref:
+      name: sample-service-team-a
+      namespace: team-a
+  http:
+  - name: team-a-root
+    matchers:
+    - uri:
+        prefix: /
+    forwardTo:
+      pathRewrite: /
