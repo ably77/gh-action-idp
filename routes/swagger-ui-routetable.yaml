@@ -2,7 +2,7 @@ apiVersion: networking.gloo.solo.io/v2
 kind: RouteTable
 metadata:
   name: swagger-ui-rt-443
-  namespace: gh-action-idp
+  namespace: portal
 spec:
   hosts:
     - 'idp.demo.glooplatform.com'

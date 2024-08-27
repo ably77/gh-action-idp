@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: swagger-ui
-  namespace: gh-action-idp
+  namespace: portal
   labels:
     app: swagger-ui
 spec:
@@ -38,7 +38,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: swagger-ui
-  namespace: gh-action-idp
+  namespace: portal
   labels:
     app: swagger-ui
 spec:
@@ -54,7 +54,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: openapi-spec
-  namespace: gh-action-idp
+  namespace: portal
 data:
   gh-action-idp-api.yaml: |
     openapi: 3.0.3
