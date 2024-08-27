@@ -26,6 +26,6 @@ spec:
         destinations:
         - ref:
             name: swagger-ui
-            namespace: gh-action-idp
+            namespace: portal
           port:
             number: 80
