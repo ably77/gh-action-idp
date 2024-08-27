@@ -33,31 +33,36 @@ paths:
       description: Trigger the GitHub Action to apply a workspace with the specified namespaces.
       security:
         - GitHubToken: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                ref:
-                  type: string
-                  example: main
-                inputs:
-                  type: object
-                  properties:
-                    workspace_name:
-                      type: string
-                      example: gh-action-idp
-                    namespaces:
-                      type: string
-                      example: team-a,team-b
-                  required:
-                    - workspace_name
-                    - namespaces
+      parameters:
+        - name: ref
+          in: query
+          required: true
+          schema:
+            type: string
+            example: main
+        - name: workspace_name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: gh-action-idp
+        - name: namespaces
+          in: query
+          required: true
+          schema:
+            type: string
+            example: team-a,team-b
       responses:
         '204':
           description: Successfully triggered the GitHub Action
+        '403':
+          description: Forbidden - Must have admin rights to the repository. Check that you have provided a valid Github Personal Access Token (PAT)
+          content:
+            application/json:
+              example:
+                message: "Must have admin rights to Repository."
+                documentation_url: "https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event"
+                status: "403"
         '404':
           description: Workflow or repository not found
         '422':
@@ -71,27 +76,30 @@ paths:
       description: Trigger the GitHub Action to delete the specified workspace.
       security:
         - GitHubToken: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                ref:
-                  type: string
-                  example: main
-                inputs:
-                  type: object
-                  properties:
-                    workspace_name:
-                      type: string
-                      example: gh-action-idp
-                  required:
-                    - workspace_name
+      parameters:
+        - name: ref
+          in: query
+          required: true
+          schema:
+            type: string
+            example: main
+        - name: workspace_name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: gh-action-idp
       responses:
         '204':
           description: Successfully triggered the GitHub Action
+        '403':
+          description: Forbidden - Must have admin rights to the repository. Check that you have provided a valid Github Personal Access Token (PAT)
+          content:
+            application/json:
+              example:
+                message: "Must have admin rights to Repository."
+                documentation_url: "https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event"
+                status: "403"
         '404':
           description: Workflow or repository not found
         '422':
@@ -105,32 +113,37 @@ paths:
       description: Trigger the GitHub Action to deploy a sample service in the specified team namespace.
       security:
         - GitHubToken: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                ref:
-                  type: string
-                  example: main
-                  description: The git reference (branch or tag) to use
-                inputs:
-                  type: object
-                  properties:
-                    workspace_name:
-                      type: string
-                      example: gh-action-idp
-                    team_name:
-                      type: string
-                      example: team-a
-                  required:
-                    - workspace_name
-                    - team_name
+      parameters:
+        - name: ref
+          in: query
+          required: true
+          schema:
+            type: string
+            example: main
+          description: The git reference (branch or tag) to use
+        - name: workspace_name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: gh-action-idp
+        - name: team_name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: team-a
       responses:
         '204':
           description: Successfully triggered the GitHub Action
+        '403':
+          description: Forbidden - Must have admin rights to the repository. Check that you have provided a valid Github Personal Access Token (PAT)
+          content:
+            application/json:
+              example:
+                message: "Must have admin rights to Repository."
+                documentation_url: "https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event"
+                status: "403"
         '404':
           description: Workflow or repository not found
         '422':
@@ -144,51 +157,66 @@ paths:
       description: Trigger the GitHub Action to apply a delegate route owned by the specified team to expose a service.
       security:
         - GitHubToken: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                ref:
-                  type: string
-                  example: main
-                inputs:
-                  type: object
-                  properties:
-                    workspace_name:
-                      type: string
-                      example: gh-action-idp
-                    team_name:
-                      type: string
-                      example: team-a
-                    matchers:
-                      type: string
-                      example: /
-                    destination_kind:
-                      type: string
-                      example: SERVICE
-                    destination_name:
-                      type: string
-                      example: sample-service-team-a
-                    destination_port:
-                      type: string
-                      example: "8080"
-                    destination_namespace:
-                      type: string
-                      example: team-a
-                  required:
-                    - workspace_name
-                    - team_name
-                    - matchers
-                    - destination_kind
-                    - destination_name
-                    - destination_port
-                    - destination_namespace
+      parameters:
+        - name: ref
+          in: query
+          required: true
+          schema:
+            type: string
+            example: main
+        - name: workspace_name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: gh-action-idp
+        - name: team_name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: team-a
+        - name: matchers
+          in: query
+          required: true
+          schema:
+            type: string
+            example: /
+        - name: destination_kind
+          in: query
+          required: true
+          schema:
+            type: string
+            example: SERVICE
+        - name: destination_name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: sample-service-team-a
+        - name: destination_port
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "8080"
+        - name: destination_namespace
+          in: query
+          required: true
+          schema:
+            type: string
+            example: team-a
       responses:
         '204':
           description: Successfully triggered the GitHub Action
+        '403':
+          description: Forbidden - Must have admin rights to the repository. Check that you have provided a valid Github Personal Access Token (PAT)
+          content:
+            application/json:
+              example:
+                message: "Must have admin rights to Repository."
+                documentation_url: "https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event"
+                status: "403"
         '404':
           description: Workflow or repository not found
         '422':
@@ -202,31 +230,36 @@ paths:
       description: Trigger the GitHub Action to delete all delegate routes owned by the specified team.
       security:
         - GitHubToken: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                ref:
-                  type: string
-                  example: main
-                inputs:
-                  type: object
-                  properties:
-                    workspace_name:
-                      type: string
-                      example: gh-action-idp
-                    team_name:
-                      type: string
-                      example: team-a
-                  required:
-                    - workspace_name
-                    - team_name
+      parameters:
+        - name: ref
+          in: query
+          required: true
+          schema:
+            type: string
+            example: main
+        - name: workspace_name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: gh-action-idp
+        - name: team_name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: team-a
       responses:
         '204':
           description: Successfully triggered the GitHub Action
+        '403':
+          description: Forbidden - Must have admin rights to the repository. Check that you have provided a valid Github Personal Access Token (PAT)
+          content:
+            application/json:
+              example:
+                message: "Must have admin rights to Repository."
+                documentation_url: "https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event"
+                status: "403"
         '404':
           description: Workflow or repository not found
         '422':
@@ -240,31 +273,36 @@ paths:
       description: Trigger the GitHub Action to delete a sample service in the specified team namespace.
       security:
         - GitHubToken: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                ref:
-                  type: string
-                  example: main
-                inputs:
-                  type: object
-                  properties:
-                    workspace_name:
-                      type: string
-                      example: gh-action-idp
-                    team_name:
-                      type: string
-                      example: team-a
-                  required:
-                    - workspace_name
-                    - team_name
+      parameters:
+        - name: ref
+          in: query
+          required: true
+          schema:
+            type: string
+            example: main
+        - name: workspace_name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: gh-action-idp
+        - name: team_name
+          in: query
+          required: true
+          schema:
+            type: string
+            example: team-a
       responses:
         '204':
           description: Successfully triggered the GitHub Action
+        '403':
+          description: Forbidden - Must have admin rights to the repository. Check that you have provided a valid Github Personal Access Token (PAT)
+          content:
+            application/json:
+              example:
+                message: "Must have admin rights to Repository."
+                documentation_url: "https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event"
+                status: "403"
         '404':
           description: Workflow or repository not found
         '422':

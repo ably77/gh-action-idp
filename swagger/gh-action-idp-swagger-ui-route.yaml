@@ -1,10 +1,10 @@
 apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
 metadata:
-  name: swagger-ui-route
+  name: gh-action-idp-swagger-ui-route
   namespace: gh-action-idp
   labels:
-    example: swagger-ui-route
+    example: gh-action-idp-swagger-ui-route
     gateway: https
 spec:
   hostnames:
@@ -14,7 +14,7 @@ spec:
       namespace: gloo-system
   rules:
     - backendRefs:
-        - name: swagger-ui
+        - name: gh-action-idp-swagger-ui
           namespace: gh-action-idp
           port: 80
       #matches:
@@ -26,4 +26,4 @@ spec:
         extensionRef:
           group: gateway.solo.io
           kind: RouteOption
-          name: swagger-ui-route-policies
+          name: gh-action-idp-swagger-ui-route-policies
