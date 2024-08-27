@@ -2,7 +2,7 @@ apiVersion: gateway.solo.io/v1
 kind: RouteOption
 metadata:
   name: gh-action-idp-swagger-ui-route-policies
-  namespace: gh-action-idp
+  namespace: portal
 spec:
   options:
     jwt:
