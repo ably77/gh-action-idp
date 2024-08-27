@@ -2,6 +2,8 @@
 
 A demo around using IDP concepts, Platform Engineering, and GitOps to enhance the developer experience
 
+## High Level Architecture Diagram
+![High Level Architecture](.images/gh-action-idp-demo.png)
 
 ### Useful curl commands:
 
