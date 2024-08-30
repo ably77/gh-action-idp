@@ -65,6 +65,7 @@ data:
     servers:
       - url: https://api.github.com/repos/ably77/gh-action-idp/actions/workflows
         description: GitHub API server
+
     components:
       securitySchemes:
         GitHubToken:
@@ -72,13 +73,16 @@ data:
           scheme: bearer
           bearerFormat: token
           description: "Personal Access Token for GitHub"
+
     security:
       - GitHubToken: []
+
     tags:
       - name: Platform Admin
         description: Actions for managing workspaces.
       - name: Dev
         description: Actions for deploying and managing services and routes.
+
     paths:
       /apply-workspace.yaml/dispatches:
         post:
@@ -113,6 +117,14 @@ data:
           responses:
             '204':
               description: Successfully triggered the GitHub Action
+            '403':
+              description: Forbidden - Must have admin rights to the repository. Check that you have provided a valid Github Personal Access Token (PAT)
+              content:
+                application/json:
+                  example:
+                    message: "Must have admin rights to Repository."
+                    documentation_url: "https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event"
+                    status: "403"
             '404':
               description: Workflow or repository not found
             '422':
@@ -147,6 +159,14 @@ data:
           responses:
             '204':
               description: Successfully triggered the GitHub Action
+            '403':
+              description: Forbidden - Must have admin rights to the repository. Check that you have provided a valid Github Personal Access Token (PAT)
+              content:
+                application/json:
+                  example:
+                    message: "Must have admin rights to Repository."
+                    documentation_url: "https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event"
+                    status: "403"
             '404':
               description: Workflow or repository not found
             '422':
@@ -186,6 +206,14 @@ data:
           responses:
             '204':
               description: Successfully triggered the GitHub Action
+            '403':
+              description: Forbidden - Must have admin rights to the repository. Check that you have provided a valid Github Personal Access Token (PAT)
+              content:
+                application/json:
+                  example:
+                    message: "Must have admin rights to Repository."
+                    documentation_url: "https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event"
+                    status: "403"
             '404':
               description: Workflow or repository not found
             '422':
@@ -244,6 +272,14 @@ data:
           responses:
             '204':
               description: Successfully triggered the GitHub Action
+            '403':
+              description: Forbidden - Must have admin rights to the repository. Check that you have provided a valid Github Personal Access Token (PAT)
+              content:
+                application/json:
+                  example:
+                    message: "Must have admin rights to Repository."
+                    documentation_url: "https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event"
+                    status: "403"
             '404':
               description: Workflow or repository not found
             '422':
@@ -282,6 +318,14 @@ data:
           responses:
             '204':
               description: Successfully triggered the GitHub Action
+            '403':
+              description: Forbidden - Must have admin rights to the repository. Check that you have provided a valid Github Personal Access Token (PAT)
+              content:
+                application/json:
+                  example:
+                    message: "Must have admin rights to Repository."
+                    documentation_url: "https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event"
+                    status: "403"
             '404':
               description: Workflow or repository not found
             '422':
@@ -320,6 +364,14 @@ data:
           responses:
             '204':
               description: Successfully triggered the GitHub Action
+            '403':
+              description: Forbidden - Must have admin rights to the repository. Check that you have provided a valid Github Personal Access Token (PAT)
+              content:
+                application/json:
+                  example:
+                    message: "Must have admin rights to Repository."
+                    documentation_url: "https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event"
+                    status: "403"
             '404':
               description: Workflow or repository not found
             '422':
