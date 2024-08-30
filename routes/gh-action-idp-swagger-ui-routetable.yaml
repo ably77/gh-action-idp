@@ -13,10 +13,6 @@ spec:
   workloadSelectors: []
   http:
     - name: gh-action-idp-swagger-ui
-      #labels:
-      #  oauth: gh-action-idp-swagger-ui.demo.glooplatform.com
-      #  waf: "true"
-      #  ratelimited: "true"
       matchers:
       - uri:
           prefix: /
