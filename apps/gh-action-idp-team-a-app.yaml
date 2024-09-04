@@ -1,0 +1,52 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sample-service-team-a
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  destination:
+    server: "https://kubernetes.default.svc"
+  source:
+    repoURL: 'https://github.com/ably77/gh-action-idp'
+    targetRevision: HEAD
+    path: fake-service-helm-chart
+    helm:
+      values: |
+        namespace: team-a
+
+        istio:
+          revision: "1-22"
+
+        app:
+          name: sample-service-team-a
+          tier: "1"
+          replicas: 1
+          image:
+            repository: nicholasjackson/fake-service
+            tag: v0.26.2
+
+        service:
+          port: 8080
+          targetPort: 8080
+
+        env:
+          LISTEN_ADDR: "0.0.0.0:8080"
+          NAME: "sample-service-team-a"
+          SERVER_TYPE: "http"
+          MESSAGE: "Hello From sample-service-team-a !"
+          UPSTREAM_URIS: ""
+          UPSTREAM_WORKERS: "1"
+          TIMING_50_PERCENTILE: "0ms"
+          TIMING_90_PERCENTILE: "0ms"
+          TIMING_99_PERCENTILE: "0ms"
+          HTTP_CLIENT_REQUEST_TIMEOUT: "1s"
+          HTTP_SERVER_KEEP_ALIVES: "true"
+          HTTP_CLIENT_KEEP_ALIVES: "true"
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
