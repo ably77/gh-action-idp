@@ -1,0 +1,11 @@
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  name: gh-actions-idp-upstream
+  namespace: gloo-system
+spec:
+  static:
+    hosts:
+      - addr: api.github.com
+        port: 443
+  sslConfig: {}

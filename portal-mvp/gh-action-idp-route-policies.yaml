@@ -1,0 +1,10 @@
+apiVersion: gateway.solo.io/v1
+kind: RouteOption
+metadata:
+  name: gh-action-idp-route-policies
+  namespace: gh-action-idp
+spec:
+  options:
+    hostRewrite: 'api.github.com'
+    jwt:
+      disable: true

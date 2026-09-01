@@ -1,0 +1,30 @@
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: HTTPRoute
+metadata:
+  name: idp-all-in-one-route
+  namespace: gh-action-idp
+  labels:
+    example: idp-all-in-one-route
+    gateway: https
+spec:
+  hostnames:
+  - "idp.glootest.com"
+  parentRefs:
+    - name: https
+      namespace: gloo-system
+  rules:
+    - backendRefs:
+        - kind: Upstream
+          name: github-action-api
+          namespace: gh-action-idp
+          port: 443
+      #matches:
+      #  - path:
+      #      type: PathPrefix
+      #      value: /
+      filters:
+      - type: ExtensionRef
+        extensionRef:
+          group: gateway.solo.io
+          kind: RouteOption
+          name: gh-action-idp-route-policies

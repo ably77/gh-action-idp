@@ -1,0 +1,26 @@
+apiVersion: portal.gloo.solo.io/v1
+kind: ApiProduct
+metadata:
+  labels:
+    expose-portal: "true"
+  name: gh-actions-idp-svc-api-product
+  namespace: gloo-system
+spec:
+  id: "gh-actions-idp"
+  displayName: "Github Actions IDP API"
+  #customMetadata:
+  #  imageURL: https://raw.githubusercontent.com/solo-io/gloo-mesh-use-cases/fbf090f7f6e9dd14c1b14d7c274b8611c9b0443e/gloo-gateway/portal/astronauts-image.jpeg
+  versions:
+  - apiVersion: "v1"
+    openapiMetadata:
+      title: "Github Actions IDP API v1"
+      description: "REST API for gh-actions-idp demo"
+      contact: "alex.ly@solo.io"
+    customMetadata:
+      compatibility: "None"
+      lifecyclePhase: "Generally Available"
+    targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: gh-actions-idp-route
+      namespace: gloo-system
